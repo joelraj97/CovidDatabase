@@ -4,16 +4,29 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
-
+import numpy as np
+import matplotlib.pyplot as plt
+import lxml
+import html5lib
+import urllib
+import os
+import requests
+from bs4 import BeautifulSoup
 
 from dash.dependencies import Output,Input
-
 app=dash.Dash(__name__,external_stylesheets=[dbc.themes.CYBORG])
-df=pd.read_csv("https://raw.githubusercontent.com/joelraj97/CovidLine/main/owid-covid-data(1).csv")
+#url="https://www.worldometers.info/coronavirus/"
+    # Make a GET request to fetch the raw HTML content
+#html_content = requests.get(url).text
+    # Parse the html content
+#soup = BeautifulSoup(html_content, "lxml")
+#gdp_table = soup.find("table", id = "main_table_countries")
+#gdp_table_data = gdp_table.tbody.find_all("tr")
+
+df=pd.read_csv("owid-covid-data(1).csv")
 
 
 #App Layout
-
 app.layout=html.Div([
     dbc.Button("Success",color="success",className="mr-1"),
 
@@ -26,20 +39,45 @@ app.layout=html.Div([
                           for i in df["location"].unique()],
                  value="Afghanistan",
                  style={'size': 3, "offset": 2, 'order': 3,"color":"Red","width":"50%"},
+                 multi=False,
 
 
                  ),
     html.Br(),
     html.Div(id="dateid",style={"text-align":"left","font-size":50,"color":"Blue"}),
     html.Br(),
-    html.H2("Total Cases",style={"text-align":"center"}),
-    html.Div(id="totalcases",style={'size': 3, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":90}),
-    html.Br(),
-    html.H2("Deaths",style={"text-align":"center"}),
-    html.Div(id="deathno",title="Deaths",draggable="true",style={'size': 6, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":90}),
-    html.Br(),
-    dcc.Graph(id="linegraph2",figure={})
+    dbc.Row(
 
+        [
+            dbc.Col(   [
+
+                 html.H2("Total Cases",style={"text-align":"center"}),
+                 html.Div(id="totalcases",style={'size': 3, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":90})],
+                 width={'size': 3, "offset": 0, 'order': 3}
+        ),
+
+            dbc.Col( [
+                html.H2("Deaths",style={"text-align":"center"}),
+                html.Div(id="deathno",title="Deaths",draggable="true",style={'size': 6, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":90})],
+                width={'size': 3, "offset": 0, 'order': 3}
+            )
+            ]) ,
+    html.Br(),
+    dbc.Row( [
+        dbc.Col(
+
+    dcc.Graph(id="linegraph2",figure={})    ,
+    width={'size': 6, "offset": 0, 'order': 2}
+            
+
+        ) ,
+        dbc.Col(
+          dcc.Graph(id="piechart",figure={})    ,
+            width={'size': 5, "offset": 0, 'order': 2}
+        )    ,
+
+
+   ] )
 ])
 
 #call back
@@ -48,12 +86,14 @@ app.layout=html.Div([
      [Output(component_id="dateid",component_property="children"),
       Output(component_id="totalcases",component_property="children"),
      Output(component_id="deathno",component_property="children"),
-     Output(component_id="linegraph2",component_property="figure")],
+     Output(component_id="linegraph2",component_property="figure") ,
+      Output(component_id="piechart",component_property="figure")],
     Input(component_id="my_option",component_property="value")
 )
 
 
 def update_graph(option_slctd):
+
     filterdata=df[df["location"]==option_slctd]
     totalcases=int(filterdata["new_cases"].sum())
     deaths=int(filterdata["new_deaths"].sum())
@@ -74,7 +114,22 @@ def update_graph(option_slctd):
         'x':0.5,
         'xanchor': 'center',
         'yanchor': 'top'})
-    return "Data Upto: "+dates, totalcases,deaths,fig2
+    fig2.update_layout(
+        margin=dict(l=1, r=1, t=1, b=1),
+        width=700,
+        height=300,
+        paper_bgcolor="LightSteelBlue",
+    )
+
+    piegraph=px.pie(filterdata,names=['Total case','Deaths'],values=[totalcases,deaths])
+    piegraph.update_layout(
+        margin=dict(l=20, r=20, t=20, b=20),
+        width=700,
+        height=300,
+        paper_bgcolor="LightSteelBlue",
+    )
+
+    return "Data Upto: "+dates, totalcases,deaths,fig2,piegraph
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True)         
