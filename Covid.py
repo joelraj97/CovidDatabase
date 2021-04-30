@@ -18,7 +18,7 @@ df=pd.read_csv("owid-covid-data(1).csv")
 #App Layout
 app.layout=html.Div([
     dbc.Button("Success",color="success",className="mr-1"),
-
+                                                                      
 
     html.H1("Covid-19 Coronavirus Pandemic",style={"text-align":"center"}),
 
