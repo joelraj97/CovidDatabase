@@ -4,24 +4,13 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
-import numpy as np
-import matplotlib.pyplot as plt
-import lxml
-import html5lib
-import urllib
-import os
-import requests
-from bs4 import BeautifulSoup
+
+
 
 from dash.dependencies import Output,Input
 app=dash.Dash(__name__,external_stylesheets=[dbc.themes.CYBORG])
-#url="https://www.worldometers.info/coronavirus/"
-    # Make a GET request to fetch the raw HTML content
-#html_content = requests.get(url).text
-    # Parse the html content
-#soup = BeautifulSoup(html_content, "lxml")
-#gdp_table = soup.find("table", id = "main_table_countries")
-#gdp_table_data = gdp_table.tbody.find_all("tr")
+
+
 
 df=pd.read_csv("owid-covid-data(1).csv")
 
