@@ -11,7 +11,7 @@ print(df)
 app.head = html.Link(rel='stylesheet', href='./static/stylesheet.css'),
 #App Layout
 app.layout=html.Div([
-    dbc.Button("Success",color="success",className="mr-1"),
+
     html.H1("Covid-19 Coronavirus Pandemic",style={"text-align":"center"}), #heading of the application
     dcc.Dropdown(id="my_option",       #drop down menu
                  options=[{'label':i,'value':i}
@@ -21,7 +21,7 @@ app.layout=html.Div([
                  multi=False,   #wheather multiple values allowed in the dropdown
                 ),
     html.Br(),
-    html.Div(id="dateid",style={"text-align":"left","font-size":50,"color":"Blue"}),  #latest date of the available data
+    html.Div(dbc.Fade(id="dateid",style={"text-align":"left","font-size":50,"color":"Blue","width":"50%"})),  #latest date of the available data
     html.Br(),
     dbc.Container([
     dbc.Row(    #Row1
