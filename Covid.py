@@ -7,7 +7,7 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Output,Input
 app=dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
 df=pd.read_csv("owid-covid-data(1).csv")   #raed data from csv
-print(df)
+#print(df)
 app.head = html.Link(rel='stylesheet', href='./static/stylesheet.css'),
 #App Layout
 app.layout=html.Div([
