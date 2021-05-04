@@ -21,7 +21,7 @@ app.layout=html.Div([
                  multi=False,   #wheather multiple values allowed in the dropdown
                 ),
     html.Br(),
-    html.Div(dbc.Fade(id="dateid",style={"text-align":"left","font-size":50,"color":"Blue","width":"50%"})),  #latest date of the available data
+    html.Div(dbc.Button(id="dateid",style={"text-align":"left","font-size":50,"color":"Blue","width":"50%"})),  #latest date of the available data
     html.Br(),
     dbc.Container([
     dbc.Row(    #Row1
