@@ -14,7 +14,7 @@ app.head = html.Link(rel='stylesheet', href='./static/stylesheet.css'),
 app.layout=html.Div([
 
     html.H1("Covid-19 Coronavirus Pandemic",style={"text-align":"center"}), #heading of the application
-    dcc.Dropdown(id="my_option",       #drop down menu
+    dcc.Dropdown(id="my_option",       # drop down menu
                  options=[{'label':i,'value':i}
                           for i in df["location"].unique()],   #selecting options from the list of locations
                  value="Afghanistan",   #initila value of the dropdown
