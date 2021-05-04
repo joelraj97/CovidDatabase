@@ -87,6 +87,7 @@ app.layout=html.Div([
 
 def update_graph(option_slctd):
 
+    print("Opted location is ",option_slctd)	
     filterdata=df[df["location"]==option_slctd]    #to filter out data for the selected country
     totalcases=int(filterdata["new_cases"].sum())         #to find the total cases in the selected country
     totalcasesper=int(filterdata["total_cases_per_million"].sum())
