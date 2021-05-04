@@ -6,7 +6,7 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Output,Input
 app=dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
-df=pd.read_csv("owid-covid-data(1).csv")   #raed data from csv
+df=pd.read_csv("owid-covid-data.csv")   #raed data from csv
 
 app.head = html.Link(rel='stylesheet', href='./static/stylesheet.css'),
 #App Layout
@@ -17,11 +17,13 @@ app.layout=html.Div([
                  options=[{'label':i,'value':i}
                           for i in df["location"].unique()],   #selecting options from the list of locations
                  value="Afghanistan",   #initila value of the dropdown
-                 style={'size': 3, "offset": 2, 'order': 3,"color":"Red","width":"50%"},#style features of the dropdown
-                 multi=False,   #wheather multiple values allowed in the dropdown
+                 style={'size': 3, "offset": 2, 'order': 3,"color":"Red","width":"100%"},#style features of the dropdown
+                multi=False,   #wheather multiple values allowed in the dropdown
+                 className="left_menu",
+
                 ),
     html.Br(),
-    html.Div(dbc.Button(id="dateid",style={"text-align":"left","font-size":50,"color":"Blue","width":"50%"})),  #latest date of the available data
+    html.Div(dbc.Button(id="dateid",style={"text-align":"left","font-size":20,"color":"Blue","width":"50%","offset":"6"})),  #latest date of the available data
     html.Br(),
     dbc.Container([
     dbc.Row(    #Row1
@@ -29,45 +31,44 @@ app.layout=html.Div([
             dbc.Col(   [    #first column of Row 1
             dbc.Alert([
                   html.H2("Total Cases",style={"text-align":"center"}),
-                 html.Div(id="totalcases",style={'size': 3, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":90})])],
+                 html.Div(id="totalcases",style={'size': 3, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":40})])],
                  width={'size': 5, "offset": 0, 'order': 3}
         ),
 
            dbc.Col(   [    #first column of Row 1
             dbc.Alert([
                   html.H2("Total Cases Per ",style={"text-align":"center"}),
-                 html.Div(id="totalcasesper",style={'size': 3, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":90})])],
+                 html.Div(id="totalcasesper",style={'size': 3, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":40})])],
                  width={'size': 4, "offset": 0, 'order': 3}
         ),
 
             dbc.Col( [     #second column of Row 1
               dbc.Alert([
                 html.H2("Deaths",style={"text-align":"center"}),
-                html.Div(id="deathno",title="Deaths",draggable="true",style={'size': 6, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":90})])],
+                html.Div(id="deathno",title="Deaths",draggable="true",style={'size': 6, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":40})])],
                 width={'size': 3, "offset": 0, 'order': 3}
             )
             ]) ,
         ]),
     html.Br(),
-    dbc.ModalBody([
+    dbc.Container([
     dbc.Row( [    #Row 2
         dbc.Col(    #First column of row 2
 
     dcc.Graph(id="linegraph2",figure={})    ,
-    width={'size': 6, "offset": 0, 'order': 2}
+    width={'size': 4, "offset": 0, 'order': 2}
             
 
         ) ,
-        dbc.Col(       #Secon Column of Row 2
+        dbc.Col(       #Second Column of Row 2
           dcc.Graph(id="piechart",figure={})    ,
-            width={'size': 5, "offset": 0, 'order': 2}
+            width={'size': 3, "offset": 4, 'order': 2}
         )    ,
 
 
    ] )      ,
 ]),
-   html.Br(),
-   dcc.Graph(id="line",figure={})  ,
+
 ])
 
 #call back
@@ -79,7 +80,7 @@ app.layout=html.Div([
      Output(component_id="deathno",component_property="children"),
      Output(component_id="linegraph2",component_property="figure") ,
       Output(component_id="piechart",component_property="figure") ,
-      Output(component_id="line",component_property="figure")],
+      ],
     Input(component_id="my_option",component_property="value")
 )
 
@@ -124,7 +125,7 @@ def update_graph(option_slctd):
 
     )
     pie=px.line(filterdata,x="total_cases",y="new_cases_smoothed")
-    return "Data Upto: "+dates, totalcases,totalcasesper,deaths,fig2,piegraph ,pie
+    return "Data Upto: "+dates, totalcases,totalcasesper,deaths,fig2,piegraph
 
 if __name__ == '__main__':
     app.run_server(debug=True)         
