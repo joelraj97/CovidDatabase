@@ -7,12 +7,12 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Output,Input
 app=dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
 df=pd.read_csv("owid-covid-data(1).csv")   #raed data from csv
-#print(df)
+print(df)
 app.head = html.Link(rel='stylesheet', href='./static/stylesheet.css'),
 #App Layout
 app.layout=html.Div([
 
-    html.H1("Covid-19 Coronavirus Pandemic",style={"text-align":"center"}), #heading of the application
+    html.H1("Covid-19 Coronavirus P andemic",style={"text-align":"center"}), #heading of the application
     dcc.Dropdown(id="my_option",       # drop down menu
                  options=[{'label':i,'value':i}
                           for i in df["location"].unique()],   #selecting options from the list of locations
