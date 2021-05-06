@@ -31,21 +31,22 @@ sidebar = html.Div(
     [
 dcc.Dropdown(
                  id="my_option",       # drop down menu
-                 className="columns",
+                 #className="left_menu",
                  options=[{'label':i,'value':i}
                           for i in df["location"].unique()
 
                           ],   #selecting options from the list of locations
-                 value="Afghanistan",   #initila value of the dropdown
-                 #className="app-margin",
-                 style={"width" :'100%',
-                            "display" : 'inline-block',
-                            "verticalAlign" : "middle"},#style features of the dropdown
+                 value="India",   #initila value of the dropdown
+
+                 #style={"width" :'100%',
+                            #"display" : 'inline-block',
+                           # "verticalAlign" : "middle"},#style features of the dropdown
                  multi=False,
 )
          ],
         style=SIDEBAR_STYLE,
 )
+#content = html.Div(id="page-content", children=[], style=CONTENT_STYLE)
 app.layout=html.Div([
 
 
@@ -68,6 +69,7 @@ app.layout=html.Div([
 
                 #),
     sidebar,
+   # content,
     html.Br(),
    dbc.Container( html.Div(id="dateid",style={"text-align":"left","font-size":20,"color":"Blue","width":"50%","size":4,"offset":"7"})),  #latest date of the available data
     html.Br(),
@@ -78,20 +80,20 @@ app.layout=html.Div([
             dbc.Alert([
                   html.H2("Total Cases",style={"text-align":"center"}),
                  html.Div(id="totalcases",style={'size': 3, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":40})])],
-                 width={'size': 5, "offset": 0, 'order': 3}
+                 width={'size': 3, "offset": 0, 'order': 3}
         ),
 
            dbc.Col(   [    #first column of Row 1
             dbc.Alert([
                   html.H2("Total Cases Per ",style={"text-align":"center"}),
-                 html.Div(id="totalcasesper",style={'size': 3, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":40})])],
+                 html.Div(id="totalcasesper",style={'size': 4, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":40})])],
                  width={'size': 4, "offset": 0, 'order': 3}
         ),
 
             dbc.Col( [     #second column of Row 1
               dbc.Alert([
                 html.H2("Deaths",style={"text-align":"center"}),
-                html.Div(id="deathno",title="Deaths",draggable="true",style={'size': 6, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":40})])],
+                html.Div(id="deathno",title="Deaths",draggable="true",style={'size': 3, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":40})])],
                 width={'size': 3, "offset": 0, 'order': 3}
             )
             ]) ,
@@ -124,7 +126,8 @@ app.layout=html.Div([
 #call back
 
 @app.callback(
-     [Output(component_id="dateid",component_property="children"),
+     [  # Output("page-content", "children"),
+         Output(component_id="dateid",component_property="children"),
       Output(component_id="totalcases",component_property="children"),
       Output(component_id="totalcasesper",component_property="children"),
      Output(component_id="deathno",component_property="children"),
