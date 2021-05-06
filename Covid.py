@@ -93,8 +93,8 @@ app.layout=html.Div([
 
            dbc.Col(   [    #first column of Row 1
             dbc.Alert([
-                  html.H2("Total Cases Per ",style={"text-align":"center"}),
-                 html.Div(id="totalcasesper",style={'size': 4, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":40})])],
+                  html.H2("People Vaccinated ",style={"text-align":"center"}),
+                 html.Div(id="vaccination",style={'size': 4, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":40})])],
                  width={'size': 4, "offset": 0, 'order': 3}
         ),
 
@@ -138,7 +138,7 @@ app.layout=html.Div([
      [  # Output("page-content", "children"),
          Output(component_id="dateid",component_property="children"),
       Output(component_id="totalcases",component_property="children"),
-      Output(component_id="totalcasesper",component_property="children"),
+      Output(component_id="vaccination",component_property="children"),
      Output(component_id="deathno",component_property="children"),
      Output(component_id="linegraph2",component_property="figure") ,
       Output(component_id="piechart",component_property="figure") ,
@@ -157,7 +157,7 @@ def update_graph(option_slctd):
     print("Opted location is ",option_slctd)	
     filterdata=df[df["location"]==option_slctd]    #to filter out data for the selected country
     totalcases=int(filterdata["new_cases"].sum())         #to find the total cases in the selected country
-    totalcasesper=int(filterdata["total_cases_per_million"].sum())
+    vacci=int(filterdata["new_vaccinations"].sum())
     deaths=int(filterdata["new_deaths"].sum())   #to find the deaths in the selsected country
     dates=filterdata["date"].tail(1)     #to return the latest value of date in the selected country
     index=dates.index.values
@@ -195,7 +195,7 @@ def update_graph(option_slctd):
     # fig_LarsReg_ret, fig_PolyReg_ret, fig_Holt_ret, fig_LagPred_ret = studying_pred.dt_process(df,option_slctd)  # returns the figures to show
     fig_PolyReg_ret = studying_pred.dt_process(df, option_slctd)  # returns the figures to show
     # return "Data Upto: "+dates, totalcases,totalcasesper,deaths,fig2,piegraph, fig_LarsReg_ret, fig_PolyReg_ret, fig_Holt_ret, fig_LagPred_ret
-    return "Data Upto: " + dates, totalcases, totalcasesper, deaths, fig2, piegraph, fig_PolyReg_ret
+    return "Data Upto: " + dates, totalcases, vacci, deaths, fig2, piegraph, fig_PolyReg_ret
 
 if __name__ == '__main__':
     app.run_server(debug=True)         
