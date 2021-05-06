@@ -13,18 +13,22 @@ app.head = html.Link(rel='stylesheet', href='./static/stylesheet.css'),
 #App Layout
 app.layout=html.Div([
 
-    html.H1("Covid-19 Coronavirus P andemic",style={"text-align":"center"}), #heading of the application
-    dcc.Dropdown(id="my_option",       # drop down menu
+
+    html.H1("Covid-19 Coronavirus Pandemic",style={"text-align":"center"}), #heading of the application
+    dcc.Dropdown(
+                 id="my_option",       # drop down menu
                  options=[{'label':i,'value':i}
-                          for i in df["location"].unique()],   #selecting options from the list of locations
+                          for i in df["location"].unique()
+                          ],   #selecting options from the list of locations
                  value="Afghanistan",   #initila value of the dropdown
+                 className="app-margin",
                  style={'size': 3, "offset": 2, 'order': 3,"color":"Red","width":"100%"},#style features of the dropdown
-                multi=False,   #wheather multiple values allowed in the dropdown
-                 className="left_menu",
+                 multi=False,   #wheather multiple values allowed in the dropdown
+
 
                 ),
     html.Br(),
-    html.Div(dbc.Button(id="dateid",style={"text-align":"left","font-size":20,"color":"Blue","width":"50%","offset":"6"})),  #latest date of the available data
+   dbc.Container( html.Div(id="dateid",style={"text-align":"left","font-size":20,"color":"Blue","width":"50%","size":4,"offset":"7"})),  #latest date of the available data
     html.Br(),
     dbc.Container([
     dbc.Row(    #Row1
@@ -52,18 +56,18 @@ app.layout=html.Div([
             ]) ,
         ]),
     html.Br(),
-    dbc.Container([
+    dbc.ModalBody([
     dbc.Row( [    #Row 2
         dbc.Col(    #First column of row 2
 
-    dcc.Graph(id="linegraph2",figure={})    ,
-    width={'size': 4, "offset": 0, 'order': 2}
+    dcc.Graph(id="linegraph2",figure={},className="right_conten")    ,
+    width={'size': 2, "offset": 1, 'order': 2}
             
 
         ) ,
         dbc.Col(       #Second Column of Row 2
           dcc.Graph(id="piechart",figure={})    ,
-            width={'size': 3, "offset": 4, 'order': 2}
+            width={'size': 1, "offset": 4, 'order': 2}
         )    ,
 
 
