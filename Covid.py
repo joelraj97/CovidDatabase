@@ -5,6 +5,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Output,Input
+import CovidPred  as studying_pred
 app=dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
 df=pd.read_csv("owid-covid-data.csv")   #raed data from csv
 
@@ -67,6 +68,11 @@ app.layout=html.Div([
 
 
    ] )      ,
+    html.Br(),
+    dcc.Graph(id="fig_LarsReg",figure={}),
+    dcc.Graph(id="fig_PolyReg",figure={}),
+    dcc.Graph(id="fig_Holt",figure={}),
+    dcc.Graph(id="fig_LagPred",figure={}),
 ]),
 
 ])
@@ -80,6 +86,11 @@ app.layout=html.Div([
      Output(component_id="deathno",component_property="children"),
      Output(component_id="linegraph2",component_property="figure") ,
       Output(component_id="piechart",component_property="figure") ,
+
+    Output(component_id="fig_LarsReg",component_property="figure") ,
+    Output(component_id="fig_PolyReg",component_property="figure") ,
+    Output(component_id="fig_Holt",component_property="figure") ,
+    Output(component_id="fig_LagPred",component_property="figure") ,
       ],
     Input(component_id="my_option",component_property="value")
 )
@@ -125,7 +136,8 @@ def update_graph(option_slctd):
 
     )
     pie=px.line(filterdata,x="total_cases",y="new_cases_smoothed")
-    return "Data Upto: "+dates, totalcases,totalcasesper,deaths,fig2,piegraph
+    fig_LarsReg_ret, fig_PolyReg_ret, fig_Holt_ret, fig_LagPred_ret = studying_pred.dt_process(df,option_slctd)  # returns the figures to show
+    return "Data Upto: "+dates, totalcases,totalcasesper,deaths,fig2,piegraph, fig_LarsReg_ret, fig_PolyReg_ret, fig_Holt_ret, fig_LagPred_ret
 
 if __name__ == '__main__':
     app.run_server(debug=True)         
