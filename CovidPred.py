@@ -257,7 +257,8 @@ def dt_process(df2,option_slctd):
                                  columns=["Model Name", "Root Mean Squared Error"]).sort_values(
         ["Root Mean Squared Error"])
     print(model_summary)
-    return fig_LarsReg, fig_PolyReg, fig_Holt, fig_LagPred
+    # return fig_LarsReg, fig_PolyReg, fig_Holt, fig_LagPred
+    return fig_PolyReg
 
 def calculate_lag(df, lag_list, column):
     for lag in lag_list:

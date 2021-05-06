@@ -73,10 +73,10 @@ app.layout=html.Div([
 
    ] )      ,
     html.Br(),
-    dcc.Graph(id="fig_LarsReg",figure={}),
+    # dcc.Graph(id="fig_LarsReg",figure={}),
     dcc.Graph(id="fig_PolyReg",figure={}),
-    dcc.Graph(id="fig_Holt",figure={}),
-    dcc.Graph(id="fig_LagPred",figure={}),
+    # dcc.Graph(id="fig_Holt",figure={}),
+    # dcc.Graph(id="fig_LagPred",figure={}),
 ]),
 
 ])
@@ -91,10 +91,10 @@ app.layout=html.Div([
      Output(component_id="linegraph2",component_property="figure") ,
       Output(component_id="piechart",component_property="figure") ,
 
-    Output(component_id="fig_LarsReg",component_property="figure") ,
+    # Output(component_id="fig_LarsReg",component_property="figure") ,
     Output(component_id="fig_PolyReg",component_property="figure") ,
-    Output(component_id="fig_Holt",component_property="figure") ,
-    Output(component_id="fig_LagPred",component_property="figure") ,
+    # Output(component_id="fig_Holt",component_property="figure") ,
+    # Output(component_id="fig_LagPred",component_property="figure") ,
       ],
     Input(component_id="my_option",component_property="value")
 )
@@ -140,8 +140,10 @@ def update_graph(option_slctd):
 
     )
     pie=px.line(filterdata,x="total_cases",y="new_cases_smoothed")
-    fig_LarsReg_ret, fig_PolyReg_ret, fig_Holt_ret, fig_LagPred_ret = studying_pred.dt_process(df,option_slctd)  # returns the figures to show
-    return "Data Upto: "+dates, totalcases,totalcasesper,deaths,fig2,piegraph, fig_LarsReg_ret, fig_PolyReg_ret, fig_Holt_ret, fig_LagPred_ret
+    # fig_LarsReg_ret, fig_PolyReg_ret, fig_Holt_ret, fig_LagPred_ret = studying_pred.dt_process(df,option_slctd)  # returns the figures to show
+    fig_PolyReg_ret = studying_pred.dt_process(df, option_slctd)  # returns the figures to show
+    # return "Data Upto: "+dates, totalcases,totalcasesper,deaths,fig2,piegraph, fig_LarsReg_ret, fig_PolyReg_ret, fig_Holt_ret, fig_LagPred_ret
+    return "Data Upto: " + dates, totalcases, totalcasesper, deaths, fig2, piegraph, fig_PolyReg_ret
 
 if __name__ == '__main__':
     app.run_server(debug=True)         
