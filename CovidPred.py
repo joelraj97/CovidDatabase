@@ -35,8 +35,9 @@ def dt_process(df2,option_slctd):
     dt_one_country = df[df["location"] == opted_country][['date', 'new_cases']] #work the predictions only for the column 'new_cases' in the rest of code
     dt_one_country['new_cases'] = dt_one_country['new_cases'].fillna(0)
     dt_one_country['date'] = pd.to_datetime(dt_one_country['date'])
-    dt_one_country['Days Since'] = dt_one_country['date'] - dt_one_country['date'].min()
-    dt_one_country['Days Since'] = dt_one_country['Days Since'].dt.days     #use the days since the starting date of records of this country, use this as the known variable to make the prediction
+    dt_one_country['Days Since'] = list(range(0, dt_one_country.shape[0]))
+    # dt_one_country['Days Since'] = dt_one_country['date'] - dt_one_country['date'].min()
+    # dt_one_country['Days Since'] = dt_one_country['Days Since'].dt.days     #use the days since the starting date of records of this country, use this as the known variable to make the prediction
 
     train_ml = dt_one_country.iloc[:int(dt_one_country.shape[0] * 0.95)]    #First 95% dates used for fitting the regressor
     valid_ml = dt_one_country.iloc[int(dt_one_country.shape[0] * 0.95):]    #last 5% dates to be predicted and compared to validation data of these dates
@@ -150,21 +151,21 @@ def dt_process(df2,option_slctd):
     # fig_Holt.show()
 
     # the following is Log Linear predictor not currently shown in figure
-    x_train = train_ml['Days Since']
-    y_train_1 = train_ml['new_cases']
-    y_train_1 = y_train_1.astype('float64')
-    y_train_1 = y_train_1.apply(lambda x: np.log1p(x))      #first take logarithm of data and then use Linear predictor
-    y_train_1.replace([np.inf, -np.inf], 0, inplace=True)
-    x_test = valid_ml['Days Since']
-    y_test = valid_ml['new_cases']
+    # x_train = train_ml['Days Since']
+    # y_train_1 = train_ml['new_cases']
+    # y_train_1 = y_train_1.astype('float64')
+    # y_train_1 = y_train_1.apply(lambda x: np.log1p(x))      #first take logarithm of data and then use Linear predictor
+    # y_train_1.replace([np.inf, -np.inf], 0, inplace=True)
+    # x_test = valid_ml['Days Since']
+    # y_test = valid_ml['new_cases']
     # y_test = y_test.astype('float64')
     # y_test = y_test.apply(lambda x: np.log1p(x))
     # y_test.replace([np.inf, -np.inf], 0, inplace=True)
 
-    regr = LinearRegression(normalize=True)
-    regr.fit(np.array(x_train).reshape(-1, 1), np.array(y_train_1).reshape(-1, 1))
-
-    ypred = regr.predict(np.array(x_test).reshape(-1, 1))
+    # regr = LinearRegression(normalize=True)
+    # regr.fit(np.array(x_train).reshape(-1, 1), np.array(y_train_1).reshape(-1, 1))
+    #
+    # ypred = regr.predict(np.array(x_test).reshape(-1, 1))
     # print(np.sqrt(mean_squared_error(y_test, np.expm1(ypred))))
 
     # # Plot results
@@ -226,7 +227,7 @@ def dt_process(df2,option_slctd):
                                      mode='lines+markers', name="Prediction new Cases " + str(opted_country)))
     fig_LagPred.add_trace(go.Scatter(x=dates_list_num, y=real_data,
                                      mode='lines+markers', name="Validation Data for new Cases " + str(opted_country)))
-    fig_LagPred.add_vline(x=dates_list_num.iloc[start_fcst], line_dash="dash")  # ,
+    fig_LagPred.add_vline(x=dates_list_num.iloc[start_fcst-1], line_dash="dash")  # ,
     # annotation=dict())#, annotation_position="top right")
     # fig_LagPred.add_trace(go.Scatter(x=valid['date'], y=y_pred["Holt"],
     #                               mode='lines+markers', name="Prediction of new Cases " + str(opted_country)))
