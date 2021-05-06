@@ -13,12 +13,18 @@ app.head = html.Link(rel='stylesheet', href='./static/stylesheet.css'),
 #App Layout
 SIDEBAR_STYLE = {
     "position": "fixed",
-    "top": 0,
-    "left": 0,
-    "bottom": 0,
-    "width": "16rem",
+   "top": 0,
+   "left": 0,
+  "bottom": 0,
+    #"width": "16rem",
     "padding": "2rem 1rem",
     "background-color": "#f8f9fa",
+"width": "13%",
+" position" : "absolute",
+ "height": "absolute",
+ "z-index": 999,
+ "background": "#2A3F54",
+
 }
 
 # padding for the page content
@@ -28,10 +34,10 @@ CONTENT_STYLE = {
     "padding": "2rem 1rem",
 }
 sidebar = html.Div(
-    [
+    [  html.H4("Select Country",style={"color":"yellow"}),
 dcc.Dropdown(
                  id="my_option",       # drop down menu
-                 #className="left_menu",
+                # className="left_menu",
                  options=[{'label':i,'value':i}
                           for i in df["location"].unique()
 
@@ -42,7 +48,9 @@ dcc.Dropdown(
                             #"display" : 'inline-block',
                            # "verticalAlign" : "middle"},#style features of the dropdown
                  multi=False,
-)
+                 style={"height":"20px"},
+
+),
          ],
         style=SIDEBAR_STYLE,
 )
@@ -70,7 +78,7 @@ app.layout=html.Div([
                 #),
     sidebar,
    # content,
-    html.Br(),
+   # html.Br(),
    dbc.Container( html.Div(id="dateid",style={"text-align":"left","font-size":20,"color":"Blue","width":"50%","size":4,"offset":"7"})),  #latest date of the available data
     html.Br(),
     dbc.Container([
@@ -100,16 +108,17 @@ app.layout=html.Div([
 
     html.Br(),
     dbc.Row( [    #Row 2
-        dbc.Col(    #First column of row 2
-
-    dcc.Graph(id="linegraph2",figure={},style={'size': 2, "offset": 0, 'order': 2,"width":"20%","height": "50%"})    ,
-    width={'size': 1, "offset": 0, 'order': 2,"max-width":"20%","height": "50%"}
+        dbc.Col( [   #First column of row 2
+        html.H4("New Cases With Date",style={"text-align":"center","size":4}),
+    dcc.Graph(id="linegraph2",figure={},style={'size': 2, "offset": 0, 'order': 2,"width":"20%","height": "50%"}) ]   ,
+    width={'size': 4,"offset": 0, 'order': 2,"max-width":"20%","height": "50%"},
             
 
         ) ,
-        dbc.Col(       #Second Column of Row 2
-          dcc.Graph(id="piechart",figure={},style={'size': 2, "offset": 0, 'order': 2,"width":"20%","height":"50%"})    ,
-            width={'size': 1, "offset": 6, 'order': 2,"max-width":"20%","height": "50%"}
+        dbc.Col(  [    # Second Column of Row 2
+                        html.H4("Percentage of Confirmed and Deaths", style={ "size": 3}),
+          dcc.Graph(id="piechart",figure={},style={'size': 2, "offset": 0, 'order': 2,"width":"20%","height":"50%"})   ] ,
+            width={'size':5,"offset": 3, 'order': 2,"max-width":"20%","height": "50%"}
         )    ,
 
 
@@ -161,12 +170,12 @@ def update_graph(option_slctd):
     print(date)
     #formatted_df = pd.to_datetime(date,format='%dd%mm%YYYY')
     #print(formatted_df)
-    fig2=px.line(filterdata,x="date",y="new_cases",title="New Cases With Date",animation_group="new_cases_smoothed")
-    fig2.update_layout(title_font_color="black",title_font_size=50)
-    fig2.update_layout(title={'y':0.9,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'})
+    fig2=px.line(filterdata,x="date",y="new_cases")#,title="New Cases With Date")
+    #fig2.update_layout(title_font_color="black",title_font_size=30)
+   # fig2.update_layout(title={'y':1.0,
+     #   'x':0.5})
+        #'xanchor': 'center',
+        #'yanchor': 'top'})
     fig2.update_layout(
         margin=dict(l=1, r=1, t=1, b=1),
         width=600,
@@ -177,7 +186,7 @@ def update_graph(option_slctd):
     piegraph=px.pie(filterdata,names=['Total case','Deaths'],values=[totalcases,deaths])
     piegraph.update_layout(
         margin=dict(l=20, r=20, t=20, b=20),
-        width=500,
+        width=600,
         height=300,
         paper_bgcolor="LightSteelBlue",
 
