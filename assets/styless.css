@@ -24,11 +24,11 @@
  position: absolute;
  top: 0;
  left: 0;
- height: 100vh;
+ height: 1000vh;
  z-index: 999;
  background: #2A3F54;
 }
 
-#leftcolumn a { 
+.leftcolumn { 
 font-weight: bold;margin: 0 15px 15px 15px;display: block;
 }

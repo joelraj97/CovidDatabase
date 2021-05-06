@@ -11,22 +11,63 @@ df=pd.read_csv("owid-covid-data.csv")   #raed data from csv
 
 app.head = html.Link(rel='stylesheet', href='./static/stylesheet.css'),
 #App Layout
+SIDEBAR_STYLE = {
+    "position": "fixed",
+    "top": 0,
+    "left": 0,
+    "bottom": 0,
+    "width": "16rem",
+    "padding": "2rem 1rem",
+    "background-color": "#f8f9fa",
+}
+
+# padding for the page content
+CONTENT_STYLE = {
+    "margin-left": "18rem",
+    "margin-right": "2rem",
+    "padding": "2rem 1rem",
+}
+sidebar = html.Div(
+    [
+dcc.Dropdown(
+                 id="my_option",       # drop down menu
+                 className="columns",
+                 options=[{'label':i,'value':i}
+                          for i in df["location"].unique()
+
+                          ],   #selecting options from the list of locations
+                 value="Afghanistan",   #initila value of the dropdown
+                 #className="app-margin",
+                 style={"width" :'100%',
+                            "display" : 'inline-block',
+                            "verticalAlign" : "middle"},#style features of the dropdown
+                 multi=False,
+)
+         ],
+        style=SIDEBAR_STYLE,
+)
 app.layout=html.Div([
 
 
     html.H1("Covid-19 Coronavirus Pandemic",style={"text-align":"center"}), #heading of the application
-    dcc.Dropdown(
-                 id="my_option",       # drop down menu
-                 options=[{'label':i,'value':i}
-                          for i in df["location"].unique()
-                          ],   #selecting options from the list of locations
-                 value="Afghanistan",   #initila value of the dropdown
-                 className="app-margin",
-                 style={'size': 3, "offset": 2, 'order': 3,"color":"Red","width":"100%"},#style features of the dropdown
-                 multi=False,   #wheather multiple values allowed in the dropdown
+    #dcc.Dropdown(
+     #            id="my_option",       # drop down menu
+      #           className="columns",
+       #          options=[{'label':i,'value':i}
+        #                  for i in df["location"].unique()
+
+         #                 ],   #selecting options from the list of locations
+          #       value="Afghanistan",   #initila value of the dropdown
+           #      #className="app-margin",
+            #     style={"width" :'100%',
+             #               "display" : 'inline-block',
+              #              "verticalAlign" : "middle"},#style features of the dropdown
+               #  multi=False,   #wheather multiple values allowed in the dropdown
+                 #className="left_menu",
 
 
-                ),
+                #),
+    sidebar,
     html.Br(),
    dbc.Container( html.Div(id="dateid",style={"text-align":"left","font-size":20,"color":"Blue","width":"50%","size":4,"offset":"7"})),  #latest date of the available data
     html.Br(),
@@ -54,20 +95,19 @@ app.layout=html.Div([
                 width={'size': 3, "offset": 0, 'order': 3}
             )
             ]) ,
-        ]),
+
     html.Br(),
-    dbc.ModalBody([
     dbc.Row( [    #Row 2
         dbc.Col(    #First column of row 2
 
-    dcc.Graph(id="linegraph2",figure={},className="right_conten")    ,
-    width={'size': 2, "offset": 1, 'order': 2}
+    dcc.Graph(id="linegraph2",figure={},style={'size': 2, "offset": 0, 'order': 2,"width":"20%","height": "50%"})    ,
+    width={'size': 1, "offset": 0, 'order': 2,"max-width":"20%","height": "50%"}
             
 
         ) ,
         dbc.Col(       #Second Column of Row 2
-          dcc.Graph(id="piechart",figure={})    ,
-            width={'size': 1, "offset": 4, 'order': 2}
+          dcc.Graph(id="piechart",figure={},style={'size': 2, "offset": 0, 'order': 2,"width":"20%","height":"50%"})    ,
+            width={'size': 1, "offset": 6, 'order': 2,"max-width":"20%","height": "50%"}
         )    ,
 
 
@@ -126,7 +166,7 @@ def update_graph(option_slctd):
         'yanchor': 'top'})
     fig2.update_layout(
         margin=dict(l=1, r=1, t=1, b=1),
-        width=700,
+        width=600,
         height=300,
         paper_bgcolor="LightSteelBlue",
     )
@@ -134,7 +174,7 @@ def update_graph(option_slctd):
     piegraph=px.pie(filterdata,names=['Total case','Deaths'],values=[totalcases,deaths])
     piegraph.update_layout(
         margin=dict(l=20, r=20, t=20, b=20),
-        width=700,
+        width=500,
         height=300,
         paper_bgcolor="LightSteelBlue",
 
