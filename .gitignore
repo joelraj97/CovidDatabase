@@ -1,2 +1,3 @@
 venv/
-id/
+.idea/
+__pycache__/
