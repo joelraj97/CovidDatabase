@@ -8,6 +8,7 @@ from dash.dependencies import Output,Input
 import CovidPred  as studying_pred
 app=dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
 df=pd.read_csv("owid-covid-data.csv")   #raed data from csv
+
 dff=df.copy()
 dff.drop(dff.columns.difference(['location','new_cases']), 1, inplace=True)
 #dff.sum(axis=1)
@@ -29,7 +30,7 @@ newdf.drop(index2 , inplace=True)
 newdf.rename(columns = {'new_cases':'Total_Cases'}, inplace = True)
 descendingdf=newdf.sort_values('Total_Cases',ascending=False).reset_index()
 descendingdf.drop("index",inplace=True,axis=1)
-
+descendingdf.to_csv('file2.csv', header=False, index=False,mode='a')
 print(descendingdf)
 
 app.head = html.Link(rel='stylesheet', href='./static/stylesheet.css'),
@@ -130,12 +131,13 @@ app.layout=html.Div([
             ]) ,
 
     html.Br(),
+  dbc.Tab([
     dbc.Row( [    #Row 2
         dbc.Col( [   #First column of row 2
         html.H4("New Cases With Date",style={"text-align":"center","size":4}),
     dcc.Graph(id="linegraph2",figure={},style={'size': 2, "offset": 0, 'order': 2,"width":"20%","height": "50%"}) ]   ,
     width={'size': 4,"offset": 0, 'order': 2,"max-width":"20%","height": "50%"},
-            
+
 
         ) ,
         dbc.Col(  [    # Second Column of Row 2
@@ -146,15 +148,18 @@ app.layout=html.Div([
 
 
    ] )      ,
+  ]),
     html.Br(),
+    dbc.Tab([
     # dcc.Graph(id="fig_LarsReg",figure={}),
     dcc.Graph(id="fig_PolyReg",figure={}),
     # dcc.Graph(id="fig_Holt",figure={}),
     # dcc.Graph(id="fig_LagPred",figure={}),
+    html.H4("Top 5 countries with the most cases", style={"size": 3}),
     dcc.Graph(id="bargraph",figure={})
 ]),
 
-
+]),
 ])
 
 #call back
@@ -208,6 +213,7 @@ def update_graph(option_slctd):
         height=300,
         paper_bgcolor="LightSteelBlue",
     )
+   # fig2.show()
 
     piegraph=px.pie(filterdata,names=['Total case','Deaths'],values=[totalcases,deaths])
     piegraph.update_layout(
@@ -230,7 +236,7 @@ def update_graph(option_slctd):
         paper_bgcolor="LightSteelBlue",
 
     )
-    return "Data Upto: " + dates, totalcases, vacci, deaths, fig2, piegraph, fig_PolyReg_ret,bar
+    return "Data Upto: " + dates, totalcases, vacci, deaths,fig2, piegraph, fig_PolyReg_ret,bar
 
 if __name__ == '__main__':
     app.run_server(debug=True)         
