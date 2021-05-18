@@ -1,4 +1,4 @@
-## https://www.kaggle.com/neelkudu28/covid-19-visualizations-predictions-forecasting  ---- Covid Predictions used for Polynomial regression and Holt prediction
+### https://www.kaggle.com/neelkudu28/covid-19-visualizations-predictions-forecasting  ---- Covid Predictions used for Polynomial regression and Holt prediction
 ## https://www.kaggle.com/saga21/covid-global-forecast-sir-model-ml-regressions   ----- Covid predictions used for Linear Lagged prediction model
 import warnings
 warnings.filterwarnings('ignore')                   #currently warnings ignored, you can see the warnings if you comment this
