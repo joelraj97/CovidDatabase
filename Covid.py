@@ -31,7 +31,7 @@ def my_function():
  descendingdf=newdf.sort_values('Total_Cases',ascending=False).reset_index()
  descendingdf.drop("index",inplace=True,axis=1)
  descendingdf.to_csv('file2.csv', header=False, index=False,mode='a')
- print(descendingdf)
+ #print(descendingdf)
  top5 = descendingdf.head(5)
  barg = px.bar(top5, y="Total_Cases", x="location")
  barg.update_layout \
