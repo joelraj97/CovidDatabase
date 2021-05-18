@@ -1,4 +1,4 @@
-# https://www.kaggle.com/neelkudu28/covid-19-visualizations-predictions-forecasting  ---- Covid Predictions used for Polynomial regression and Holt prediction
+## https://www.kaggle.com/neelkudu28/covid-19-visualizations-predictions-forecasting  ---- Covid Predictions used for Polynomial regression and Holt prediction
 # https://www.kaggle.com/saga21/covid-global-forecast-sir-model-ml-regressions   ----- Covid predictions used for Linear Lagged prediction model
 import warnings
 warnings.filterwarnings('ignore')                   #currently warnings ignored, you can see the warnings if you comment this
@@ -15,7 +15,7 @@ import numpy as np
 import datetime as dt
 from datetime import timedelta
 
-#from sklearn.model_selection import GridSearchCV
+##from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LinearRegression,Ridge,Lasso,LassoLars       #pip install sklearn
 from sklearn.metrics import silhouette_score, silhouette_samples
 from sklearn.metrics import mean_squared_error,r2_score
