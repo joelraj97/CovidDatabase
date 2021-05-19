@@ -7,8 +7,9 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Output,Input
 import CovidPred  as studying_pred
 app=dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
-df=pd.read_csv("owid-covid-data.csv")   #raed data from csv
-def my_function():
+df=pd.read_csv("owid-covid-data.csv")   #read the covid data from file
+
+def data_formatting():
  dff=df.copy()
  dff.drop(dff.columns.difference(['location','new_cases']), 1, inplace=True)
  #dff.sum(axis=1)
@@ -31,7 +32,7 @@ def my_function():
  descendingdf=newdf.sort_values('Total_Cases',ascending=False).reset_index()
  descendingdf.drop("index",inplace=True,axis=1)
  #descendingdf.to_csv('file2.csv', header=False, index=False,mode='a')
- print(descendingdf)
+ #print(descendingdf)
  top5 = descendingdf.head(5)
  barg = px.bar(top5, y="Total_Cases", x="location")
  barg.update_layout \
@@ -40,35 +41,37 @@ def my_function():
          width=600,
          height=300,
          paper_bgcolor="LightSteelBlue",
+        )
 
-     )
 
-
-my_function()
+data_formatting()
 app.head = html.Link(rel='stylesheet', href='./static/stylesheet.css')
 #App Layout
 SIDEBAR_STYLE = {
     "position": "fixed",
-   "top": 0,
-   "left": 0,
-  "bottom": 0,
+    "top": 0,
+    "left": 0,
+    "bottom": 0,
     #"width": "16rem",
     "padding": "2rem 1rem",
     "background-color": "#f8f9fa",
-"width": "13%",
-" position" : "absolute",
- "height": "absolute",
- "z-index": 999,
- "background": "#2A3F54",
+    "width": "13%",
+    " position" : "absolute",
+    "height": "absolute",
+    "z-index": 999,
+    "background": "#2A3F54",
 
 }
 
+'''
+wins commented the unused code 
 # padding for the page content
 CONTENT_STYLE = {
     "margin-left": "18rem",
     "margin-right": "2rem",
     "padding": "2rem 1rem",
 }
+'''
 sidebar = html.Div(
     [html.H4("Select Country",style={"color":"yellow"}),
 dcc.Dropdown(
@@ -98,9 +101,9 @@ app.layout=html.Div([
     html.H1("Covid-19 Coronavirus Pandemic",style={"text-align":"center"}), #heading of the application
 
     sidebar,
-   # content,
-   # html.Br(),
-   dbc.Container( html.Div(id="dateid",style={"text-align":"left","font-size":20,"color":"Blue","width":"50%","size":4,"offset":"7"})),  #latest date of the available data
+    # content,
+    # html.Br(),
+    dbc.Container( html.Div(id="dateid",style={"text-align":"left","font-size":20,"color":"Blue","width":"50%","size":4,"offset":"7"})),  #latest date of the available data
     html.Br(),
     dbc.Container([
     dbc.Row(    #Row1
@@ -143,7 +146,6 @@ app.layout=html.Div([
             width={'size':5,"offset": 3, 'order': 2,"max-width":"20%","height": "50%"}
         )    ,
 
-
    ] )      ,
   ]),
     html.Br(),
@@ -159,13 +161,13 @@ app.layout=html.Div([
 
 @app.callback(
      [
-         Output(component_id="dateid",component_property="children"),
+      Output(component_id="dateid",component_property="children"),
       Output(component_id="totalcases",component_property="children"),
       Output(component_id="vaccination",component_property="children"),
-     Output(component_id="deathno",component_property="children"),
-     Output(component_id="linegraph2",component_property="figure") ,
+      Output(component_id="deathno",component_property="children"),
+      Output(component_id="linegraph2",component_property="figure") ,
       Output(component_id="piechart",component_property="figure") ,
-    Output(component_id="fig_PolyReg",component_property="figure") ,
+      Output(component_id="fig_PolyReg",component_property="figure") ,
       ],
     Input(component_id="my_option",component_property="value")
 )
