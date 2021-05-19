@@ -30,8 +30,8 @@ def my_function():
  newdf.rename(columns = {'new_cases':'Total_Cases'}, inplace = True)
  descendingdf=newdf.sort_values('Total_Cases',ascending=False).reset_index()
  descendingdf.drop("index",inplace=True,axis=1)
- descendingdf.to_csv('file2.csv', header=False, index=False,mode='a')
- #print(descendingdf)
+ #descendingdf.to_csv('file2.csv', header=False, index=False,mode='a')
+ print(descendingdf)
  top5 = descendingdf.head(5)
  barg = px.bar(top5, y="Total_Cases", x="location")
  barg.update_layout \
