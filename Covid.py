@@ -42,7 +42,7 @@ def my_function():
          paper_bgcolor="LightSteelBlue",
 
      )
- barg.show()
+
 
 my_function()
 app.head = html.Link(rel='stylesheet', href='./static/stylesheet.css')
