@@ -45,8 +45,9 @@ def data_formatting():
 
 
 data_formatting()
-app.head = html.Link(rel='stylesheet', href='./static/stylesheet.css')
-#App Layout
+
+# app.head = html.Link(rel='stylesheet', href='./static/stylesheet.css')
+
 SIDEBAR_STYLE = {
     "position": "fixed",
     "top": 0,
@@ -60,8 +61,8 @@ SIDEBAR_STYLE = {
     "height": "absolute",
     "z-index": 999,
     "background": "#2A3F54",
-
 }
+
 
 '''
 wins commented the unused code 
@@ -72,37 +73,28 @@ CONTENT_STYLE = {
     "padding": "2rem 1rem",
 }
 '''
+# Implementing the country selection box
 sidebar = html.Div(
-    [html.H4("Select Country",style={"color":"yellow"}),
-dcc.Dropdown(
+    [html.H5("Select Country",style={"color":"yellow"}),
+    dcc.Dropdown(
                  id="my_option",       # drop down menu
-                # className="left_menu",
                  options=[{'label':i,'value':i}
                           for i in df["location"].unique()
-
                           ],   #selecting options from the list of locations
-                 value="India",   #initila value of the dropdown
-
-                 #style={"width" :'100%',
-                            #"display" : 'inline-block',
-                           # "verticalAlign" : "middle"},#style features of the dropdown
+                 value="India",   #initial value set in the dropdown
                  multi=False,
                  style={"height":"20px"},
-
-),
-         ],
-        style=SIDEBAR_STYLE,
+               ),
+    ],
+      style=SIDEBAR_STYLE,
 )
 
-#content = html.Div(id="page-content", children=[], style=CONTENT_STYLE)
+
+#App Layout
 app.layout=html.Div([
 
-
     html.H1("Covid-19 Coronavirus Pandemic",style={"text-align":"center"}), #heading of the application
-
     sidebar,
-    # content,
-    # html.Br(),
     dbc.Container( html.Div(id="dateid",style={"text-align":"left","font-size":20,"color":"Blue","width":"50%","size":4,"offset":"7"})),  #latest date of the available data
     html.Br(),
     dbc.Container([
@@ -131,7 +123,7 @@ app.layout=html.Div([
             ]) ,
 
     html.Br(),
-  dbc.Tab([
+    dbc.Tab([
     dbc.Row( [    #Row 2
         dbc.Col( [   #First column of row 2
         html.H4("New Cases With Date",style={"text-align":"center","size":4}),
@@ -142,17 +134,18 @@ app.layout=html.Div([
         ) ,
         dbc.Col(  [    # Second Column of Row 2
                         html.H4("Percentage of Confirmed and Deaths", style={ "size": 3}),
-          dcc.Graph(id="piechart",figure={},style={'size': 2, "offset": 0, 'order': 2,"width":"20%","height":"50%"})   ] ,
+        dcc.Graph(id="piechart",figure={},style={'size': 2, "offset": 0, 'order': 2,"width":"20%","height":"50%"})   ] ,
             width={'size':5,"offset": 3, 'order': 2,"max-width":"20%","height": "50%"}
         )    ,
 
    ] )      ,
   ]),
+
+
     html.Br(),
     dbc.Tab([
     dcc.Graph(id="fig_PolyReg",figure={}),
-
-]),
+   ]),
 
 ]),
 ])
