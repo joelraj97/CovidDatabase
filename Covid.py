@@ -84,6 +84,7 @@ sidebar = html.Div(
                  value="India",   #initial value set in the dropdown
                  multi=False,
                  style={"height":"20px"},
+                 clearable=False,
                ),
     ],
       style=SIDEBAR_STYLE,
