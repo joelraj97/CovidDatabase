@@ -45,7 +45,7 @@ def my_function():
 
 
 my_function()
-app.head = html.Link(rel='stylesheet', href='./static/stylesheet.css')
+#app.head = html.Link(rel='stylesheet', href='./static/stylesheet.css')
 #App Layout
 SIDEBAR_STYLE = {
     "position": "fixed",
@@ -85,6 +85,7 @@ dcc.Dropdown(
                            # "verticalAlign" : "middle"},#style features of the dropdown
                  multi=False,
                  style={"height":"20px"},
+                 clearable=False,
 
 ),
          ],
