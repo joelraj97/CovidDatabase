@@ -365,15 +365,15 @@ def dt_process(df2,option_slctd):
     # not currently returned
     # shows the original recorded data for all the days
     fig_ARIMA_pred.add_trace(go.Scatter(x=dt_one_country['date'], y=dt_one_country["new_cases"],
-                                       mode='lines+markers', name="Train Data for new Cases"))
+                                       mode='lines+markers', name="Train Data for 'New Cases'"))
     # shows the predicted data for all the days
     fig_ARIMA_pred.add_trace(go.Scatter(x=add_pred_dates, y=y_pred_additionaldays['ARIMA'],
                                        mode='lines+markers',
-                                       name="Prediction output for new Cases " + str(opted_country)))
+                                       name="Prediction output for 'New Cases'"))
     fig_ARIMA_pred.add_vline(x=add_pred_dates.iloc[0],
                             line_dash="dash")  # ,#add vertical line on the date to know the SPLIT between training and test data
-    fig_ARIMA_pred.update_layout(title="new Cases ARIMA Prediction " + str(opted_country),
-                                xaxis_title="Date", yaxis_title="new Cases",
+    fig_ARIMA_pred.update_layout(title="'New Cases' Prediction for " + str(opted_country),
+                                xaxis_title="Date", yaxis_title="'New Cases'",
                                 legend=dict(x=0, y=1, traceorder="normal"))
     # fig_ARIMA_pred.show()
 
