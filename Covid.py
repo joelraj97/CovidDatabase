@@ -108,12 +108,12 @@ app.layout=html.Div([
                  width={'size': 3, "offset": 0, 'order': 3}
         ),
 
-           dbc.Col(   [    #first column of Row 1
-            dbc.Alert([
-                  html.H2("People Vaccinated ",style={"text-align":"center"}),
-                 html.Div(id="vaccination",style={'size': 4, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":40})])],
-                 width={'size': 4, "offset": 0, 'order': 3}
-        ),
+        #   dbc.Col(   [    #first column of Row 1
+          #  dbc.Alert([
+            #      html.H2("People Vaccinated ",style={"text-align":"center"}),
+             #    html.Div(id="vaccination",style={'size': 4, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":40})])],
+            #     width={'size': 4, "offset": 0, 'order': 3}
+        #),
 
             dbc.Col( [     #second column of Row 1
               dbc.Alert([
@@ -134,7 +134,7 @@ app.layout=html.Div([
 
         ) ,
         dbc.Col(  [    # Second Column of Row 2
-                        html.H4("Percentage of Confirmed and Deaths", style={ "size": 3}),
+                        html.H4("Percentage of Deaths", style={ "size": 3}),
         dcc.Graph(id="piechart",figure={},style={'size': 2, "offset": 0, 'order': 2,"width":"20%","height":"50%"})   ] ,
             width={'size':5,"offset": 3, 'order': 2,"max-width":"20%","height": "50%"}
         )    ,
@@ -144,9 +144,9 @@ app.layout=html.Div([
 
 
     html.Br(),
-    dbc.Tab([
+
+
     dcc.Graph(id="fig_PolyReg",figure={}),
-   ]),
 
 ]),
 ])
@@ -157,15 +157,16 @@ app.layout=html.Div([
      [
       Output(component_id="dateid",component_property="children"),
       Output(component_id="totalcases",component_property="children"),
-      Output(component_id="vaccination",component_property="children"),
+     # Output(component_id="vaccination",component_property="children"),
       Output(component_id="deathno",component_property="children"),
       Output(component_id="linegraph2",component_property="figure") ,
       Output(component_id="piechart",component_property="figure") ,
       Output(component_id="fig_PolyReg",component_property="figure") ,
       ],
-    Input(component_id="my_option",component_property="value")
-)
 
+      Input(component_id="my_option",component_property="value"),
+
+)
 
 def update_graph(option_slctd):
 
@@ -206,7 +207,10 @@ def update_graph(option_slctd):
     fig_PolyReg_ret = studying_pred.dt_process(df, option_slctd)  # returns the figures to show
 
 
-    return "Data Upto: " + dates, totalcases, vacci, deaths,fig2, piegraph, fig_PolyReg_ret
+    return "Data Upto: " + dates, totalcases,deaths,fig2, piegraph, fig_PolyReg_ret
+
+
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)         
