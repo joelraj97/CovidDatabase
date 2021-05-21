@@ -41,6 +41,21 @@ def dt_process(df2,option_slctd):
     # dt_one_country['Days Since'] = dt_one_country['date'] - dt_one_country['date'].min()
     # dt_one_country['Days Since'] = dt_one_country['Days Since'].dt.days     #use the days since the starting date of records of this country, use this as the known variable to make the prediction
 
+    days_ahead_to_predict = 30
+    train_x_alldays_tilldate = np.array(dt_one_country["Days Since"]).reshape(-1, 1)
+    train_y_alldays_tilldate = dt_one_country["new_cases"]
+
+    additional_days = np.linspace(1, days_ahead_to_predict, days_ahead_to_predict)      #predict additionally for 30days not in record, to know how the curve progresses
+    Days_Since_topred = []
+    Days_Since_topred = np.array(dt_one_country["Days Since"].iloc[-1:]).reshape(-1, 1)
+    Days_Since_topred = (np.append(Days_Since_topred, Days_Since_topred[-1] + additional_days)).reshape(-1,1)
+
+    # add_pred_dates = pd.DataFrame(columns=['date'])
+    add_pred_dates = dt_one_country['date'].iloc[-1:]
+
+    for i in range(1, days_ahead_to_predict+1):
+        add_pred_dates = add_pred_dates.append(add_pred_dates.iloc[-1:] + timedelta(days=1), ignore_index=True)  #increment the days count for the 30added days using datetime class
+
     train_ml = dt_one_country.iloc[:int(dt_one_country.shape[0] * 0.95)]    #First 95% dates used for fitting the regressor
     valid_ml = dt_one_country.iloc[int(dt_one_country.shape[0] * 0.95):]    #last 5% dates to be predicted and compared to validation data of these dates
 
@@ -86,6 +101,34 @@ def dt_process(df2,option_slctd):
     fig_LarsReg.update_layout(title="new Cases Lars Regression Prediction " + str(opted_country),
                                 xaxis_title="Date", yaxis_title="new Cases", legend=dict(x=0, y=1, traceorder="normal"))
     # fig_LarsReg.show()
+    ##############################################################################
+    y_pred_additionaldays = pd.DataFrame([],columns=['Lars'])
+    Larspd.fit(train_x_alldays_tilldate, train_y_alldays_tilldate)
+    y_pred_additionaldays['Lars'] = Larspd.predict(Days_Since_topred)
+
+    fig_LarsReg_pred = go.Figure()  # this handle can be returned to plot the figure outside of this function
+    # not currently returned
+    # shows the original recorded data for all the days
+    fig_LarsReg_pred.add_trace(go.Scatter(x=dt_one_country['date'], y=dt_one_country["new_cases"],
+                                     mode='lines+markers', name="Train Data for new Cases"))
+    # shows the predicted data for all the days
+    fig_LarsReg_pred.add_trace(go.Scatter(x=add_pred_dates, y=y_pred_additionaldays['Lars'],
+                                     mode='lines+markers', name="Prediction output for new Cases " + str(opted_country)))
+    fig_LarsReg_pred.add_vline(x=add_pred_dates.iloc[0],
+                               line_dash="dash")  # ,#add vertical line on the date to know the SPLIT between training and test data
+    fig_LarsReg_pred.update_layout(title="new Cases Lars Regression Prediction " + str(opted_country),
+                                   xaxis_title="Date", yaxis_title="new Cases",
+                                   legend=dict(x=0, y=1, traceorder="normal"))
+    # fig_LarsReg_pred.show()
+
+    # fig_LarsReg.add_trace(go.Scatter(x=dt_one_country['date'], y=linreg_output,
+    #                                    mode='lines', name="Linear Regression Best Fit Line",
+    #                                    line=dict(color='black', dash='dot')))
+    # fig_LarsReg_pred.add_trace(go.Scatter(x=valid_ml['date'], y=y_pred,
+    #                                  mode='lines', name="Lars Regression Best Fit Line",
+    #                                  line=dict(color='red', dash='dot')))
+
+
     ############################## Polynomial Regression - pip install sklearn #####################################################
 
     poly = PolynomialFeatures(degree=2)                 #Polynomial regressor initiate the model
@@ -102,21 +145,11 @@ def dt_process(df2,option_slctd):
     lin_reg.score(valid_poly, valid_ml['new_cases'].values)
     # print(np.sqrt(mean_squared_error(valid_ml["new_cases"], prediction_poly)))
     model_scores.append(np.sqrt(mean_squared_error(valid_ml["new_cases"], prediction_poly)))        #use this score to compare predictors and to know how close the predicted data is with the real known data
-    additional_30days = np.linspace(1, 30, 30)      #predict additionally for 30days not in record, to know how the curve progresses
-    pred_input_compiled_data = []
-    pred_input_compiled_data = np.array(dt_one_country["Days Since"]).reshape(-1, 1)
-    pred_input_compiled_data = np.append(pred_input_compiled_data, pred_input_compiled_data[-1] + additional_30days)
-
-    # add_pred_dates = pd.DataFrame(columns=['date'])
-    add_pred_dates = dt_one_country['date']
-
-    for i in range(1, 31):
-        add_pred_dates = add_pred_dates.append(add_pred_dates.iloc[-1:] + timedelta(days=1), ignore_index=True)  #increment the days count for the 30added days using datetime class
 
     # comp_data=poly.fit_transform(np.array(dt_one_country["Days Since"]).reshape(-1,1))
-    comp_data = poly.fit_transform(pred_input_compiled_data.reshape(-1, 1))
+    # comp_data = poly.fit_transform(pred_input_compiled_data.reshape(-1, 1))
     # plt.figure(figsize=(11, 6))
-    predictions_poly = lin_reg.predict(comp_data)
+    # predictions_poly = lin_reg.predict(comp_data)
 
     fig_PolyReg = go.Figure()       #returning this handle to show figure outside the function
     fig_PolyReg.add_trace(go.Scatter(x=train_ml['date'], y=train_ml["new_cases"],
@@ -132,6 +165,27 @@ def dt_process(df2,option_slctd):
                               xaxis_title="Date", yaxis_title="new Cases",
                               legend=dict(x=0, y=1, traceorder="normal"))
     # fig_PolyReg.show()
+    ########################################################################
+
+    train_poly_pred = poly.fit_transform(train_x_alldays_tilldate)
+    lin_reg.fit(train_poly_pred, train_y_alldays_tilldate)
+    y_pred_additionaldays['Poly'] = lin_reg.predict(poly.fit_transform(Days_Since_topred))
+
+    fig_PolyReg_pred = go.Figure()  # this handle can be returned to plot the figure outside of this function
+    # not currently returned
+    # shows the original recorded data for all the days
+    fig_PolyReg_pred.add_trace(go.Scatter(x=dt_one_country['date'], y=dt_one_country["new_cases"],
+                                          mode='lines+markers', name="Train Data for new Cases"))
+    # shows the predicted data for all the days
+    fig_PolyReg_pred.add_trace(go.Scatter(x=add_pred_dates, y=y_pred_additionaldays['Poly'],
+                                          mode='lines+markers',
+                                          name="Prediction output for new Cases " + str(opted_country)))
+    fig_PolyReg_pred.add_vline(x=add_pred_dates.iloc[0],
+                               line_dash="dash")  # ,#add vertical line on the date to know the SPLIT between training and test data
+    fig_PolyReg_pred.update_layout(title="new Cases Polynomial Regression Prediction " + str(opted_country),
+                                   xaxis_title="Date", yaxis_title="new Cases",
+                                   legend=dict(x=0, y=1, traceorder="normal"))
+    # fig_PolyReg_pred.show()
 
     ############################### HOLT Model - pip install statsmodels ######################################
 
@@ -155,6 +209,26 @@ def dt_process(df2,option_slctd):
     fig_Holt.update_layout(title="new Cases Holt's Linear Model Prediction",
                            xaxis_title="Date", yaxis_title="new Cases", legend=dict(x=0, y=1, traceorder="normal"))
     # fig_Holt.show()
+
+    ######################################################################
+
+    holt = Holt(np.asarray(train_y_alldays_tilldate)).fit(smoothing_level=0.9, smoothing_trend=0.4, optimized=False)
+    y_pred_additionaldays['Holt'] = holt.forecast(len(Days_Since_topred))  # how many data to predict
+
+    fig_Holt_pred = go.Figure()  # this handle can be returned to plot the figure outside of this function
+    # not currently returned
+    # shows the original recorded data for all the days
+    fig_Holt_pred.add_trace(go.Scatter(x=dt_one_country['date'], y=dt_one_country["new_cases"],
+                                     mode='lines+markers', name="Train Data for new Cases"))
+    # shows the predicted data for all the days
+    fig_Holt_pred.add_trace(go.Scatter(x=add_pred_dates, y=y_pred_additionaldays['Holt'],
+                                     mode='lines+markers', name="Prediction output for new Cases " + str(opted_country)))
+    fig_Holt_pred.add_vline(x=add_pred_dates.iloc[0],
+                               line_dash="dash")  # ,#add vertical line on the date to know the SPLIT between training and test data
+    fig_Holt_pred.update_layout(title="new Cases Holt Prediction " + str(opted_country),
+                                   xaxis_title="Date", yaxis_title="new Cases",
+                                   legend=dict(x=0, y=1, traceorder="normal"))
+    # fig_Holt_pred.show()
 
     ################################### HOLT Model end ###################################
 
@@ -275,6 +349,34 @@ def dt_process(df2,option_slctd):
                               xaxis_title="Date", yaxis_title="new cases", legend=dict(x=0, y=1, traceorder="normal"))
     # fig_ARIMA.show()
 
+    ############################################################################
+
+    model_sarima = auto_arima(np.asarray(train_y_alldays_tilldate), trace=False, error_action='ignore', start_p=1, start_q=1,
+                              max_p=3, max_q=3,
+                              suppress_warnings=True, stepwise=False, seasonal=False)
+
+    model_sarima.fit(np.asarray(train_y_alldays_tilldate))
+
+    prediction_sarima = model_sarima.predict(len(Days_Since_topred))
+    y_pred_additionaldays['ARIMA'] = prediction_sarima
+    y_pred_additionaldays['ARIMA'].iloc[y_pred_additionaldays['ARIMA'] < 0] = 0
+
+    fig_ARIMA_pred = go.Figure()  # this handle can be returned to plot the figure outside of this function
+    # not currently returned
+    # shows the original recorded data for all the days
+    fig_ARIMA_pred.add_trace(go.Scatter(x=dt_one_country['date'], y=dt_one_country["new_cases"],
+                                       mode='lines+markers', name="Train Data for new Cases"))
+    # shows the predicted data for all the days
+    fig_ARIMA_pred.add_trace(go.Scatter(x=add_pred_dates, y=y_pred_additionaldays['ARIMA'],
+                                       mode='lines+markers',
+                                       name="Prediction output for new Cases " + str(opted_country)))
+    fig_ARIMA_pred.add_vline(x=add_pred_dates.iloc[0],
+                            line_dash="dash")  # ,#add vertical line on the date to know the SPLIT between training and test data
+    fig_ARIMA_pred.update_layout(title="new Cases ARIMA Prediction " + str(opted_country),
+                                xaxis_title="Date", yaxis_title="new Cases",
+                                legend=dict(x=0, y=1, traceorder="normal"))
+    # fig_ARIMA_pred.show()
+
     ##################################### ARIMA Model End ##########################################################
 
 
@@ -302,7 +404,7 @@ def dt_process(df2,option_slctd):
         ["Root Mean Squared Error"])
     print(model_summary)
     # return fig_LarsReg, fig_PolyReg, fig_Holt, fig_LagPred, fig_ARIMA
-    return fig_ARIMA#fig_PolyReg#
+    return fig_ARIMA_pred#fig_ARIMA#fig_PolyReg#
 
 def calculate_lag(df, lag_list, column):
     for lag in lag_list:
