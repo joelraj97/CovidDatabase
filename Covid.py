@@ -170,20 +170,20 @@ app.layout=html.Div([
 
 def update_graph(option_slctd):
 
-    print("Opted location is ",option_slctd)	
+  #  print("Opted location is ",option_slctd)
     filterdata=df[df["location"]==option_slctd]    #to filter out data for the selected country
     totalcases=int(filterdata["new_cases"].sum())         #to find the total cases in the selected country
     vacci=int(filterdata["new_vaccinations"].sum())
     deaths=int(filterdata["new_deaths"].sum())   #to find the deaths in the selsected country
     dates=filterdata["date"].tail(1)     #to return the latest value of date in the selected country
     index=dates.index.values
-    print(dates)
+   # print(dates)
     strings = [str(integer) for integer in index]
     a_string = "".join(strings)
     keyvalue = int(a_string)
-    print(keyvalue)
+  #  print(keyvalue)
     date=filterdata.loc[keyvalue,"date"]
-    print(date)
+   # print(date)
 
     fig2=px.line(filterdata,x="date",y="new_cases")
 
