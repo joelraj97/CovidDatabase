@@ -127,7 +127,7 @@ app.layout=html.Div([
     dbc.Tab([
     dbc.Row( [    #Row 2
         dbc.Col( [   #First column of row 2
-        html.H4("New Cases With Date",style={"text-align":"center","size":4}),
+        html.H4("New Cases With Date",style={"text-align":"left","size":4}),
     dcc.Graph(id="linegraph2",figure={},style={'size': 2, "offset": 0, 'order': 2,"width":"20%","height": "50%"}) ]   ,
     width={'size': 4,"offset": 0, 'order': 2,"max-width":"20%","height": "50%"},
 
