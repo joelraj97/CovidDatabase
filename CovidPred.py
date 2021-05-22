@@ -507,7 +507,7 @@ def dt_process(df2,option_slctd):
                                 legend=dict(x=0, y=1, traceorder="normal"))
     # fig_ARIMA_pred.show()
     endtime = time.time()
-    print(f"Prediction time is {endtime-begintime}")
+    #print(f"Prediction time is {endtime-begintime}")
     return fig_ARIMA_pred
 
 # std=StandardScaler()
