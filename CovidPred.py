@@ -14,6 +14,7 @@ import plotly.graph_objects as go
 import numpy as np
 import datetime as dt
 from datetime import timedelta
+import time
 
 ##from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LinearRegression,Ridge,Lasso,LassoLars       #pip install sklearn
@@ -29,7 +30,7 @@ from statsmodels.tsa.api import Holt#,SimpleExpSmoothing,ExponentialSmoothing   
 from pmdarima import auto_arima
 # from pyramid.arima import auto_arima
 
-def dt_process(df2,option_slctd):
+def dt_process_allinclusive(df2,option_slctd):
 
     df = df2.copy()         #work with a local copy
     opted_country = option_slctd  # 'Brazil'  # input("Select the country - ")
@@ -450,6 +451,63 @@ def lin_reg_lag(X_train, Y_train, X_test):
 
     return regr, y_pred
 
+def dt_process(df2,option_slctd):
+    begintime = time.time()
+    df = df2.copy()         #work with a local copy
+    opted_country = option_slctd  # 'Brazil'  # input("Select the country - ")
+    print(opted_country)
+    dt_one_country = df[df["location"] == opted_country][['date', 'new_cases']] #work the predictions only for the column 'new_cases' in the rest of code
+    dt_one_country['new_cases'] = dt_one_country['new_cases'].fillna(0)
+    dt_one_country['date'] = pd.to_datetime(dt_one_country['date'])
+    dt_one_country['Days Since'] = list(range(0, dt_one_country.shape[0]))
+    # dt_one_country['Days Since'] = dt_one_country['date'] - dt_one_country['date'].min()
+    # dt_one_country['Days Since'] = dt_one_country['Days Since'].dt.days     #use the days since the starting date of records of this country, use this as the known variable to make the prediction
 
+    days_ahead_to_predict = 30
+    train_x_alldays_tilldate = np.array(dt_one_country["Days Since"]).reshape(-1, 1)
+    train_y_alldays_tilldate = dt_one_country["new_cases"]
+
+    additional_days = np.linspace(1, days_ahead_to_predict, days_ahead_to_predict)      #predict additionally for 30days not in record, to know how the curve progresses
+    Days_Since_topred = []
+    Days_Since_topred = np.array(dt_one_country["Days Since"].iloc[-1:]).reshape(-1, 1)
+    Days_Since_topred = (np.append(Days_Since_topred, Days_Since_topred[-1] + additional_days)).reshape(-1,1)
+
+    # add_pred_dates = pd.DataFrame(columns=['date'])
+    add_pred_dates = dt_one_country['date'].iloc[-1:]
+
+    for i in range(1, days_ahead_to_predict+1):
+        add_pred_dates = add_pred_dates.append(add_pred_dates.iloc[-1:] + timedelta(days=1), ignore_index=True)  #increment the days count for the 30added days using datetime class
+
+    ############################################################################
+
+    model_sarima = auto_arima(np.asarray(train_y_alldays_tilldate), trace=False, error_action='ignore', start_p=1, start_q=1,
+                              max_p=3, max_q=3,
+                              suppress_warnings=True, stepwise=False, seasonal=False)
+
+    model_sarima.fit(np.asarray(train_y_alldays_tilldate))
+
+    prediction_sarima = model_sarima.predict(len(Days_Since_topred))
+    y_pred_additionaldays = pd.DataFrame([],columns=['ARIMA'])
+    y_pred_additionaldays['ARIMA'] = prediction_sarima
+    y_pred_additionaldays['ARIMA'].iloc[y_pred_additionaldays['ARIMA'] < 0] = 0
+
+    fig_ARIMA_pred = go.Figure()  # this handle can be returned to plot the figure outside of this function
+    # not currently returned
+    # shows the original recorded data for all the days
+    fig_ARIMA_pred.add_trace(go.Scatter(x=dt_one_country['date'], y=dt_one_country["new_cases"],
+                                       mode='lines+markers', name="Train Data for 'New Cases'"))
+    # shows the predicted data for all the days
+    fig_ARIMA_pred.add_trace(go.Scatter(x=add_pred_dates, y=y_pred_additionaldays['ARIMA'],
+                                       mode='lines+markers',
+                                       name="Prediction output for 'New Cases'"))
+    fig_ARIMA_pred.add_vline(x=add_pred_dates.iloc[0],
+                            line_dash="dash")  # ,#add vertical line on the date to know the SPLIT between training and test data
+    fig_ARIMA_pred.update_layout(title="'New Cases' Prediction for " + str(opted_country),
+                                xaxis_title="Date", yaxis_title="'New Cases'",
+                                legend=dict(x=0, y=1, traceorder="normal"))
+    # fig_ARIMA_pred.show()
+    endtime = time.time()
+    print(f"Prediction time is {endtime-begintime}")
+    return fig_ARIMA_pred
 
 # std=StandardScaler()
