@@ -331,7 +331,7 @@ def dt_process_allinclusive(df2,option_slctd):
     #start_p and start_q values sticking to what is used in Kaggle website ---- tried stepwise=True/False both --- observations are not consistent to show one is better than other, so sticking with False, as it seems to take lesser time
     #seasonal parameter given as False haven't tried True option
 
-    # model_sarima.fit(train_ml["new_cases"])
+    #model_sarima.fit(train_ml["new_cases"])
     y_pred = valid_ml.copy()            #to make available testing output and prediction output as separate columns of y_pred for MSE comparison
     prediction_sarima = model_sarima.predict(len(valid_ml))         #Prediction for next len(valid_ml) days
     y_pred["SARIMA Model Prediction"] = prediction_sarima
