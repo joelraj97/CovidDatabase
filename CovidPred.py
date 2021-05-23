@@ -324,20 +324,28 @@ def dt_process_allinclusive(df2,option_slctd):
     #                               start_p=0, start_q=0, max_p=2, max_q=2, m=7,
     #                               suppress_warnings=True, stepwise=True, seasonal=True)
 
+    #Train the model using the time-series data available, in our case 'new_cases' data available till the last day of training --- trace=False avoids printing different ARIMA(p,d,q) information on console
     model_sarima = auto_arima(train_ml["new_cases"], trace=False, error_action='ignore', start_p=1, start_q=1,
                               max_p=3, max_q=3,
                               suppress_warnings=True, stepwise=False, seasonal=False)
+    #start_p and start_q values sticking to what is used in Kaggle website ---- tried stepwise=True/False both --- observations are not consistent to show one is better than other, so sticking with False, as it seems to take lesser time
+    #seasonal parameter given as False haven't tried True option
 
-    model_sarima.fit(train_ml["new_cases"])
-    y_pred = valid_ml.copy()
-    prediction_sarima = model_sarima.predict(len(valid_ml))
+    # model_sarima.fit(train_ml["new_cases"])
+    y_pred = valid_ml.copy()            #to make available testing output and prediction output as separate columns of y_pred for MSE comparison
+    prediction_sarima = model_sarima.predict(len(valid_ml))         #Prediction for next len(valid_ml) days
     y_pred["SARIMA Model Prediction"] = prediction_sarima
 
     # print("Root Mean Square Error for SARIMA Model: ",
     #       np.sqrt(mean_squared_error(y_pred["new_cases"], y_pred["SARIMA Model Prediction"])))
-    model_scores.append(np.sqrt(mean_squared_error(y_pred["new_cases"], y_pred["SARIMA Model Prediction"])))
+    model_scores.append(np.sqrt(mean_squared_error(y_pred["new_cases"], y_pred["SARIMA Model Prediction"])))        #MSE error for comparison with other algorithms regarding accuracy of predicted output w.r.t testing output
 
+    #Plotly graph object
     fig_ARIMA = go.Figure()
+    #Each add_trace carries one of the curves - curve 1 - training date vs new_cases
+    #curve 2 - testing data date vs new cases
+    #curve 3 - vertical line to show the split between training data and prediction/testing data
+    #curve 4 - prediction date vs predicted new_cases
     fig_ARIMA.add_trace(go.Scatter(x=train_ml['date'], y=train_ml["new_cases"],
                                      mode='lines+markers', name="Train Data for new Cases for " +str(opted_country)))
     fig_ARIMA.add_trace(go.Scatter(x=valid_ml['date'], y=valid_ml["new_cases"],
@@ -347,19 +355,23 @@ def dt_process_allinclusive(df2,option_slctd):
     fig_ARIMA.add_trace(go.Scatter(x=valid_ml['date'], y=y_pred["SARIMA Model Prediction"],
                                      mode='lines+markers', name="Prediction for new Cases", ))
     fig_ARIMA.update_layout(title="new Cases ARIMA Model Prediction",
-                              xaxis_title="Date", yaxis_title="new cases", legend=dict(x=0, y=1, traceorder="normal"))
+                              xaxis_title="Date", yaxis_title="new cases", legend=dict(x=0, y=1, traceorder="normal"))  #add legend texts and title texts
     # fig_ARIMA.show()
 
     ############################################################################
 
+    # new_cases of all the records till date are used for training to make prediction for next 'days_ahead_to_predict' days
+    # Train the model using the time-series data available, in our case 'new_cases' data available till the last day of training --- trace=False avoids printing different ARIMA(p,d,q) information on console
     model_sarima = auto_arima(np.asarray(train_y_alldays_tilldate), trace=False, error_action='ignore', start_p=1, start_q=1,
                               max_p=3, max_q=3,
                               suppress_warnings=True, stepwise=False, seasonal=False)
+    # start_p and start_q values sticking to what is used in Kaggle website ---- tried stepwise=True/False both --- observations are not consistent to show one is better than other, so sticking with False, as it seems to take lesser time
+    # seasonal parameter given as False haven't tried True option
 
-    model_sarima.fit(np.asarray(train_y_alldays_tilldate))
+    # model_sarima.fit(np.asarray(train_y_alldays_tilldate))
 
-    prediction_sarima = model_sarima.predict(len(Days_Since_topred))
-    y_pred_additionaldays['ARIMA'] = prediction_sarima
+    prediction_sarima = model_sarima.predict(len(Days_Since_topred))    #Prediction for next len(Days_Since_topred) days
+    y_pred_additionaldays['ARIMA'] = prediction_sarima          #to make available testing output and prediction output as separate columns of y_pred for MSE comparison
     y_pred_additionaldays['ARIMA'].iloc[y_pred_additionaldays['ARIMA'] < 0] = 0
 
     fig_ARIMA_pred = go.Figure()  # this handle can be returned to plot the figure outside of this function
@@ -367,15 +379,15 @@ def dt_process_allinclusive(df2,option_slctd):
     # shows the original recorded data for all the days
     fig_ARIMA_pred.add_trace(go.Scatter(x=dt_one_country['date'], y=dt_one_country["new_cases"],
                                        mode='lines+markers', name="Train Data for 'New Cases'"))
-    # shows the predicted data for all the days
+    # shows the predicted data for next len(Days_Since_topred) days --- x is date, y is predicted new_cases
     fig_ARIMA_pred.add_trace(go.Scatter(x=add_pred_dates, y=y_pred_additionaldays['ARIMA'],
                                        mode='lines+markers',
                                        name="Prediction output for 'New Cases'"))
     fig_ARIMA_pred.add_vline(x=add_pred_dates.iloc[0],
-                            line_dash="dash")  # ,#add vertical line on the date to know the SPLIT between training and test data
+                            line_dash="dash")  # ,#add vertical line on the date to know the SPLIT between training and predicted data
     fig_ARIMA_pred.update_layout(title="'New Cases' Prediction for " + str(opted_country),
                                 xaxis_title="Date", yaxis_title="'New Cases'",
-                                legend=dict(x=0, y=1, traceorder="normal"))
+                                legend=dict(x=0, y=1, traceorder="normal"))         #add legend texts and title texts
     # fig_ARIMA_pred.show()
 
     ##################################### ARIMA Model End ##########################################################
@@ -456,38 +468,41 @@ def dt_process(df2,option_slctd):
     df = df2.copy()         #work with a local copy
     opted_country = option_slctd  # 'Brazil'  # input("Select the country - ")
     print(opted_country)
-    dt_one_country = df[df["location"] == opted_country][['date', 'new_cases']] #work the predictions only for the column 'new_cases' in the rest of code
-    dt_one_country['new_cases'] = dt_one_country['new_cases'].fillna(0)
-    dt_one_country['date'] = pd.to_datetime(dt_one_country['date'])
-    dt_one_country['Days Since'] = list(range(0, dt_one_country.shape[0]))
+    dt_one_country = df[df["location"] == opted_country][['date', 'new_cases']] #.iloc[-60:,:]   #work the predictions only for the column 'new_cases' in the rest of code
+    dt_one_country['new_cases'] = dt_one_country['new_cases'].fillna(0) #replace isna values with zero
+    dt_one_country['date'] = pd.to_datetime(dt_one_country['date']) #change date values to standard date format
+    dt_one_country['Days Since'] = list(range(0, dt_one_country.shape[0]))  #count the dates passed since the first record for this country
     # dt_one_country['Days Since'] = dt_one_country['date'] - dt_one_country['date'].min()
     # dt_one_country['Days Since'] = dt_one_country['Days Since'].dt.days     #use the days since the starting date of records of this country, use this as the known variable to make the prediction
 
-    days_ahead_to_predict = 30
+    days_ahead_to_predict = 30      #number of days ahead to predict
     train_x_alldays_tilldate = np.array(dt_one_country["Days Since"]).reshape(-1, 1)
-    train_y_alldays_tilldate = dt_one_country["new_cases"]
+    train_y_alldays_tilldate = dt_one_country["new_cases"]  #training data, the model fits to this data
 
     additional_days = np.linspace(1, days_ahead_to_predict, days_ahead_to_predict)      #predict additionally for 30days not in record, to know how the curve progresses
-    Days_Since_topred = []
+    Days_Since_topred = []      #counting days for the prediction period
     Days_Since_topred = np.array(dt_one_country["Days Since"].iloc[-1:]).reshape(-1, 1)
     Days_Since_topred = (np.append(Days_Since_topred, Days_Since_topred[-1] + additional_days)).reshape(-1,1)
 
     # add_pred_dates = pd.DataFrame(columns=['date'])
-    add_pred_dates = dt_one_country['date'].iloc[-1:]
+    add_pred_dates = dt_one_country['date'].iloc[-1:]       #make date record for prediction start from latest date
 
     for i in range(1, days_ahead_to_predict+1):
         add_pred_dates = add_pred_dates.append(add_pred_dates.iloc[-1:] + timedelta(days=1), ignore_index=True)  #increment the days count for the 30added days using datetime class
 
     ############################################################################
-
+    # new_cases of all the records till date are used for training to make prediction for next 'days_ahead_to_predict' days
+    # Train the model using the time-series data available, in our case 'new_cases' data available till the last day of training --- trace=False avoids printing different ARIMA(p,d,q) information on console
     model_sarima = auto_arima(np.asarray(train_y_alldays_tilldate), trace=False, error_action='ignore', start_p=1, start_q=1,
                               max_p=3, max_q=3,
                               suppress_warnings=True, stepwise=False, seasonal=False)
+    # start_p and start_q values sticking to what is used in Kaggle website ---- tried stepwise=True/False both --- observations are not consistent to show one is better than other, so sticking with False, as it seems to take lesser time
+    # seasonal parameter given as False haven't tried True option
 
-    model_sarima.fit(np.asarray(train_y_alldays_tilldate))
+    # model_sarima.fit(np.asarray(train_y_alldays_tilldate))
 
-    prediction_sarima = model_sarima.predict(len(Days_Since_topred))
-    y_pred_additionaldays = pd.DataFrame([],columns=['ARIMA'])
+    prediction_sarima = model_sarima.predict(len(Days_Since_topred))    #Prediction for next len(Days_Since_topred) days
+    y_pred_additionaldays = pd.DataFrame([],columns=['ARIMA'])          #to make available testing output and prediction output as separate columns of y_pred for MSE comparison
     y_pred_additionaldays['ARIMA'] = prediction_sarima
     y_pred_additionaldays['ARIMA'].iloc[y_pred_additionaldays['ARIMA'] < 0] = 0
 
@@ -496,7 +511,7 @@ def dt_process(df2,option_slctd):
     # shows the original recorded data for all the days
     fig_ARIMA_pred.add_trace(go.Scatter(x=dt_one_country['date'], y=dt_one_country["new_cases"],
                                        mode='lines+markers', name="Train Data for 'New Cases'"))
-    # shows the predicted data for all the days
+    # shows the predicted data for next len(Days_Since_topred) days --- x is date, y is predicted new_cases
     fig_ARIMA_pred.add_trace(go.Scatter(x=add_pred_dates, y=y_pred_additionaldays['ARIMA'],
                                        mode='lines+markers',
                                        name="Prediction output for 'New Cases'"))
@@ -504,7 +519,7 @@ def dt_process(df2,option_slctd):
                             line_dash="dash")  # ,#add vertical line on the date to know the SPLIT between training and test data
     fig_ARIMA_pred.update_layout(title="'New Cases' Prediction for " + str(opted_country),
                                 xaxis_title="Date", yaxis_title="'New Cases'",
-                                legend=dict(x=0, y=1, traceorder="normal"))
+                                legend=dict(x=0, y=1, traceorder="normal"))     #add legend texts and title texts
     # fig_ARIMA_pred.show()
     endtime = time.time()
     #print(f"Prediction time is {endtime-begintime}")
