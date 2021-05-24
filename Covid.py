@@ -142,13 +142,14 @@ app.layout=html.Div([
 
 
     html.Br(),
-
+       html.Br(),
+        html.H3("Top 5 Countries Affected By Covid",style={"text-align":"left"}),
+        dcc.Graph(id="barg",figure={}),
 
     dcc.Graph(id="fig_PolyReg",figure={}),
         html.Br(),
-        html.H3("Top 5 Countries Affected By Covid",style={"text-align":"left"}),
-        html.Br(),
-        dcc.Graph(id="barg",figure={}),
+
+
 
 ]),
 ])
