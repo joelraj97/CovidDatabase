@@ -10,16 +10,31 @@ app=dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
 df=pd.read_csv("owid-covid-data.csv")   #read the covid data from file
 
 dff=df.copy()
+dfff=df.copy()
 dff.drop(dff.columns.difference(['location','new_cases']), 1, inplace=True)
+dfff.drop(dfff.columns.difference(['location','life_expectancy']), 1, inplace=True)
 #dff.sum(axis=1)
 newdf=dff.groupby(['location'])['new_cases'].sum().reset_index()
+contdf=dfff.groupby(['location'])['life_expectancy'].sum().reset_index()
+print(contdf)
+africaindex=contdf[contdf["location"]=="Africa"].index
 index1=newdf[newdf['location']=='Africa'].index
+africa=contdf.loc[contdf["location"]=="Africa","life_expectancy"]
 index2=newdf[newdf['location']=='World'].index
+Europeindex=contdf[contdf["location"]=="Europe"].index
 index3=newdf[newdf['location']=='Europe'].index
+Europe=contdf.loc[contdf["location"]=="Europe","life_expectancy"]
+Asiaindex=contdf[contdf["location"]=="Asia"].index
 index4=newdf[newdf['location']=='Asia'].index
+Asia=contdf.loc[contdf["location"]=="Asia","life_expectancy"]
+NAindex=contdf[contdf["location"]=="North America"].index
 index5=newdf[newdf['location']=='North America'].index
+NorthAmerica=contdf.loc[contdf["location"]=="North America","life_expectancy"]
+SAindex=contdf[contdf["location"]=="South America"].index
 index6=newdf[newdf['location']=='European Union'].index
 index7=newdf[newdf['location']=='South America'].index
+SouthAmerica=contdf.loc[contdf["location"]=="South America","life_expectancy"]
+print(SouthAmerica)
 newdf.drop(index7 , inplace=True)
 newdf.drop(index3 , inplace=True)
 newdf.drop(index4 , inplace=True)
@@ -37,8 +52,8 @@ barg = px.bar(top5, y="Total_Cases", x="location")
 barg.update_layout \
          (
          margin=dict(l=20, r=20, t=20, b=20),
-         width=600,
-         height=200,
+         width=500,
+         height=190,
          paper_bgcolor="LightSteelBlue",
         )
 
@@ -95,7 +110,7 @@ sidebar = html.Div(
 #App Layout
 app.layout=html.Div([
 
-    html.H1("Covid-19 Coronavirus Pandemic",style={"text-align":"center"}), #heading of the application
+    html.H1("Covid-19 Coronavirus Pandemic",style={"text-align":"center","font-size":30}), #heading of the application
     sidebar,
       #latest date of the available data
     html.Br(),
@@ -104,7 +119,7 @@ app.layout=html.Div([
      [
             dbc.Col(   [    #first column of Row 1
             dbc.Alert([
-                  html.H2("Total Cases",style={"text-align":"center","font-size":20}),
+                  html.H4("Total Cases",style={"text-align":"center","font-size":20}),
                  html.Div(id="totalcases",style={'size': 1, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":20})])],
                  width={'size': 3, "offset": 0, 'order': 3}
         ),
@@ -118,7 +133,7 @@ app.layout=html.Div([
 
             dbc.Col( [     #second column of Row 1
               dbc.Alert([
-                html.H2("Deaths",style={"text-align":"center","font-size":20}),
+                html.H4("Deaths",style={"text-align":"center","font-size":20}),
                 html.Div(id="deathno",title="Deaths",draggable="true",style={'size': 3, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":20})])],
                 width={'size': 3, "offset": 0, 'order': 3}
             )
@@ -142,12 +157,22 @@ app.layout=html.Div([
 
    ] )      ,
   ]),
+       dbc.Tab([
+            dbc.Row([
+               dbc.Col([
+                  html.H3("Top 5 Countries Affected By Covid",style={"text-align":"left","font-size":20}),
+                   dcc.Graph(id="barg",figure={})],
+                   width={'size': 4,"offset": 0, 'order': 2,"max-width":"20%","height": "50%"},
+                 ),
+                dbc.Col([
+                 html.H3("Testing based on Continents",style={"text-align":"left","font-size":20}),
+                 dcc.Graph(id="continent",figure={})],
+                 width={'size':5,"offset": 3, 'order': 2,"max-width":"20%","height": "50%"}
+                ),
 
 
-    html.Br(),
-       html.Br(),
-        html.H3("Top 5 Countries Affected By Covid",style={"text-align":"left"}),
-        dcc.Graph(id="barg",figure={}),
+            ]),
+            ]),
 
     dcc.Graph(id="fig_PolyReg",figure={}),
         html.Br(),
@@ -169,6 +194,7 @@ app.layout=html.Div([
       Output(component_id="piechart",component_property="figure") ,
       Output(component_id="fig_PolyReg",component_property="figure") ,
      Output(component_id="barg",component_property="figure"),
+     Output(component_id="continent",component_property="figure"),
       ],
 
       Input(component_id="my_option",component_property="value"),
@@ -196,8 +222,8 @@ def update_graph(option_slctd):
 
     fig2.update_layout(
         margin=dict(l=1, r=1, t=1, b=1),
-        width=600,
-        height=200,
+        width=500,
+        height=190,
         paper_bgcolor="LightSteelBlue",
     )
    # fig2.show()
@@ -205,16 +231,24 @@ def update_graph(option_slctd):
     piegraph=px.pie(filterdata,names=['Total case','Deaths'],values=[totalcases,deaths])
     piegraph.update_layout(
         margin=dict(l=20, r=20, t=20, b=20),
-        width=600,
-        height=200,
+        width=500,
+        height=190,
         paper_bgcolor="LightSteelBlue",
 
     )
     pie=px.line(filterdata,x="total_cases",y="new_cases_smoothed")
     fig_PolyReg_ret = studying_pred.dt_process(df, option_slctd)  # returns the figures to show
+    continentpie=px.pie(contdf,names=["Africa","Europe","Asia","North America","South America"])
+    continentpie.update_layout(
+        margin=dict(l=20, r=20, t=20, b=20),
+        width=500,
+        height=190,
+        paper_bgcolor="LightSteelBlue",
+    )
 
 
-    return "Data Upto: " + dates, totalcases,deaths,fig2, piegraph, fig_PolyReg_ret,barg
+
+    return "Data Upto: " + dates, totalcases,deaths,fig2, piegraph, fig_PolyReg_ret,barg,continentpie
 
 
 
