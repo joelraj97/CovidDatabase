@@ -9,33 +9,33 @@ import CovidPred  as studying_pred
 app=dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
 df=pd.read_csv("owid-covid-data.csv")   #read the covid data from file
 
-def data_formatting():
- dff=df.copy()
- dff.drop(dff.columns.difference(['location','new_cases']), 1, inplace=True)
- #dff.sum(axis=1)
- newdf=dff.groupby(['location'])['new_cases'].sum().reset_index()
- index1=newdf[newdf['location']=='Africa'].index
- index2=newdf[newdf['location']=='World'].index
- index3=newdf[newdf['location']=='Europe'].index
- index4=newdf[newdf['location']=='Asia'].index
- index5=newdf[newdf['location']=='North America'].index
- index6=newdf[newdf['location']=='European Union'].index
- index7=newdf[newdf['location']=='South America'].index
- newdf.drop(index7 , inplace=True)
- newdf.drop(index3 , inplace=True)
- newdf.drop(index4 , inplace=True)
- newdf.drop(index5 , inplace=True)
- newdf.drop(index6 , inplace=True)
- newdf.drop(index1 , inplace=True)
- newdf.drop(index2 , inplace=True)
- newdf.rename(columns = {'new_cases':'Total_Cases'}, inplace = True)
- descendingdf=newdf.sort_values('Total_Cases',ascending=False).reset_index()
- descendingdf.drop("index",inplace=True,axis=1)
- #descendingdf.to_csv('file2.csv', header=False, index=False,mode='a')
- #print(descendingdf)
- top5 = descendingdf.head(5)
- barg = px.bar(top5, y="Total_Cases", x="location")
- barg.update_layout \
+
+dff=df.copy()
+dff.drop(dff.columns.difference(['location','new_cases']), 1, inplace=True)
+#dff.sum(axis=1)
+newdf=dff.groupby(['location'])['new_cases'].sum().reset_index()
+index1=newdf[newdf['location']=='Africa'].index
+index2=newdf[newdf['location']=='World'].index
+index3=newdf[newdf['location']=='Europe'].index
+index4=newdf[newdf['location']=='Asia'].index
+index5=newdf[newdf['location']=='North America'].index
+index6=newdf[newdf['location']=='European Union'].index
+index7=newdf[newdf['location']=='South America'].index
+newdf.drop(index7 , inplace=True)
+newdf.drop(index3 , inplace=True)
+newdf.drop(index4 , inplace=True)
+newdf.drop(index5 , inplace=True)
+newdf.drop(index6 , inplace=True)
+newdf.drop(index1 , inplace=True)
+newdf.drop(index2 , inplace=True)
+newdf.rename(columns = {'new_cases':'Total_Cases'}, inplace = True)
+descendingdf=newdf.sort_values('Total_Cases',ascending=False).reset_index()
+descendingdf.drop("index",inplace=True,axis=1)
+#descendingdf.to_csv('file2.csv', header=False, index=False,mode='a')
+#print(descendingdf)
+top5 = descendingdf.head(5)
+barg = px.bar(top5, y="Total_Cases", x="location")
+barg.update_layout \
          (
          margin=dict(l=20, r=20, t=20, b=20),
          width=600,
@@ -43,8 +43,6 @@ def data_formatting():
          paper_bgcolor="LightSteelBlue",
         )
 
-
-data_formatting()
 
 # app.head = html.Link(rel='stylesheet', href='./static/stylesheet.css')
 
@@ -147,6 +145,10 @@ app.layout=html.Div([
 
 
     dcc.Graph(id="fig_PolyReg",figure={}),
+        html.Br(),
+        html.H3("Top 5 Countries Affected By Covid",style={"text-align":"left"}),
+        html.Br(),
+        dcc.Graph(id="barg",figure={}),
 
 ]),
 ])
@@ -162,6 +164,7 @@ app.layout=html.Div([
       Output(component_id="linegraph2",component_property="figure") ,
       Output(component_id="piechart",component_property="figure") ,
       Output(component_id="fig_PolyReg",component_property="figure") ,
+     Output(component_id="barg",component_property="figure"),
       ],
 
       Input(component_id="my_option",component_property="value"),
@@ -207,7 +210,7 @@ def update_graph(option_slctd):
     fig_PolyReg_ret = studying_pred.dt_process(df, option_slctd)  # returns the figures to show
 
 
-    return "Data Upto: " + dates, totalcases,deaths,fig2, piegraph, fig_PolyReg_ret
+    return "Data Upto: " + dates, totalcases,deaths,fig2, piegraph, fig_PolyReg_ret,barg
 
 
 
