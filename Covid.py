@@ -22,11 +22,9 @@ dfff.drop(dfff.columns.difference(['location','population']), 1, inplace=True)
 #dff.sum(axis=1)
 newdf=dff.groupby(['location'])['new_cases'].sum().reset_index()
 contdf=dfff.groupby(['location'])['population'].sum().reset_index()
-print(contdf)
 africaindex=contdf[contdf["location"]=="Africa"].index
 index1=newdf[newdf['location']=='Africa'].index
 africa=int(contdf.iloc[africaindex,1])
-print(africa)
 index2=newdf[newdf['location']=='World'].index
 Europeindex=contdf[contdf["location"]=="Europe"].index
 index3=newdf[newdf['location']=='Europe'].index
@@ -52,7 +50,6 @@ newdf.rename(columns = {'new_cases':'Total_Cases'}, inplace = True)
 descendingdf=newdf.sort_values('Total_Cases',ascending=False).reset_index()
 descendingdf.drop("index",inplace=True,axis=1)
 #descendingdf.to_csv('file2.csv', header=False, index=False,mode='a')
-print(descendingdf)
 top5 = descendingdf.head(5)
 barg = px.bar(top5, y="Total_Cases", x="location",color=[descendingdf.iloc[0,1],descendingdf.iloc[1,1],descendingdf.iloc[2,1],descendingdf.iloc[3,1],descendingdf.iloc[4,1]])
 barg.update_layout \
