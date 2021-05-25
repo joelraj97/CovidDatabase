@@ -119,7 +119,7 @@ app.layout=html.Div([
      [
             dbc.Col(   [    #first column of Row 1
             dbc.Alert([
-                  html.H4("Total Cases",style={"text-align":"center","font-size":20}),
+                  #html.H4("Total Cases",style={"text-align":"center","font-size":20}),
                  html.Div(id="totalcases",style={'size': 1, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":20})])],
                  width={'size': 3, "offset": 0, 'order': 3}
         ),
@@ -133,7 +133,7 @@ app.layout=html.Div([
 
             dbc.Col( [     #second column of Row 1
               dbc.Alert([
-                html.H4("Deaths",style={"text-align":"center","font-size":20}),
+               # html.H4("Deaths",style={"text-align":"center","font-size":20}),
                 html.Div(id="deathno",title="Deaths",draggable="true",style={'size': 3, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":20})])],
                 width={'size': 3, "offset": 0, 'order': 3}
             )
@@ -208,6 +208,7 @@ def update_graph(option_slctd):
     totalcases=int(filterdata["new_cases"].sum())         #to find the total cases in the selected country
     vacci=int(filterdata["new_vaccinations"].sum())
     deaths=int(filterdata["new_deaths"].sum())   #to find the deaths in the selsected country
+    deaths=str(deaths)
     dates=filterdata["date"].tail(1)     #to return the latest value of date in the selected country
     index=dates.index.values
    # print(dates)
@@ -217,6 +218,7 @@ def update_graph(option_slctd):
   #  print(keyvalue)
     date=filterdata.loc[keyvalue,"date"]
    # print(date)
+    totalcases=str(totalcases)
 
     fig2=px.line(filterdata,x="date",y="new_cases")
 
@@ -248,7 +250,7 @@ def update_graph(option_slctd):
 
 
 
-    return "Data Upto: " + dates, totalcases,deaths,fig2, piegraph, fig_PolyReg_ret,barg,continentpie
+    return "Data Upto: " + dates,"Total cases:"+ totalcases,"Deaths:"+ deaths,fig2, piegraph, fig_PolyReg_ret,barg,continentpie
 
 
 
