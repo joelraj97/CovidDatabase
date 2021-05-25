@@ -18,10 +18,10 @@ for locn in df["location"].unique():
 dff=df.copy()
 dfff=df.copy()
 dff.drop(dff.columns.difference(['location','new_cases']), 1, inplace=True)
-dfff.drop(dfff.columns.difference(['location','population']), 1, inplace=True)
+dfff.drop(dfff.columns.difference(['location','new_cases']), 1, inplace=True)
 #dff.sum(axis=1)
 newdf=dff.groupby(['location'])['new_cases'].sum().reset_index()
-contdf=dfff.groupby(['location'])['population'].sum().reset_index()
+contdf=dfff.groupby(['location'])['new_cases'].sum().reset_index()
 africaindex=contdf[contdf["location"]=="Africa"].index
 index1=newdf[newdf['location']=='Africa'].index
 africa=int(contdf.iloc[africaindex,1])
@@ -38,7 +38,9 @@ NorthAmerica=int(contdf.iloc[NAindex,1])
 SAindex=contdf[contdf["location"]=="South America"].index
 index6=newdf[newdf['location']=='European Union'].index
 index7=newdf[newdf['location']=='South America'].index
+Ausindex=contdf[contdf["location"]=="Australia"].index
 SouthAmerica=int(contdf.iloc[SAindex,1])
+Australia=int(contdf.iloc[Ausindex,1])
 newdf.drop(index7 , inplace=True)
 newdf.drop(index3 , inplace=True)
 newdf.drop(index4 , inplace=True)
@@ -56,7 +58,7 @@ barg.update_layout \
          (
          margin=dict(l=20, r=20, t=20, b=20),
          width=500,
-         height=190,
+         height=210,
          paper_bgcolor="LightSteelBlue",
         )
 
@@ -114,16 +116,18 @@ sidebar = html.Div(
 app.layout=html.Div([
 
     html.H1("Covid-19 Coronavirus Pandemic",style={"text-align":"center","font-size":30}), #heading of the application
+
     sidebar,
       #latest date of the available data
+    html.Br(),
     dbc.Container([
     dbc.Row(    #Row1
      [
             dbc.Col(   [    #first column of Row 1
             dbc.Alert([
                   #html.H4("Total Cases",style={"text-align":"center","font-size":20}),
-                 html.Div(id="totalcases",style={'size': 1, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":15})])],
-                 width={'size': 3, "offset": 0, 'order': 3}
+                 html.Div(id="totalcases",style={'size': 1, "offset": 2, 'order': 3,"color":"Red","text-align":"left","font-size":25})])],
+                 width={'size': 4, "offset": 0, 'order': 3}
         ),
 
         #   dbc.Col(   [    #first column of Row 1
@@ -136,10 +140,11 @@ app.layout=html.Div([
             dbc.Col( [     #second column of Row 1
               dbc.Alert([
                # html.H4("Deaths",style={"text-align":"center","font-size":20}),
-                html.Div(id="deathno",title="Deaths",draggable="true",style={'size': 3, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":15})])],
+                html.Div(id="deathno",title="Deaths",draggable="true",style={'size': 3, "offset": 2, 'order': 3,"color":"Red","text-align":"left","font-size":25})])],
                 width={'size': 3, "offset": 0, 'order': 3}
             )
             ]) ,
+        html.Br(),
 
     dbc.Tab([
     dbc.Row( [    #Row 2
@@ -158,6 +163,7 @@ app.layout=html.Div([
 
    ] )      ,
   ]),
+        html.Br(),
        dbc.Tab([
             dbc.Row([
                dbc.Col([
@@ -166,7 +172,7 @@ app.layout=html.Div([
                    width={'size': 4,"offset": 0, 'order': 2,"max-width":"20%","height": "50%"},
                  ),
                 dbc.Col([
-                 html.H3("Testing based on Continents",style={"text-align":"left","font-size":20}),
+                 html.H3("Total Cases in Each Continent",style={"text-align":"left","font-size":20}),
                  dcc.Graph(id="continent",figure={})],
                  width={'size':5,"offset": 3, 'order': 2,"max-width":"20%","height": "50%"}
                 ),
@@ -229,7 +235,7 @@ def update_graph(option_slctd):
     fig2.update_layout(
         margin=dict(l=1, r=1, t=1, b=1),
         width=500,
-        height=190,
+        height=210,
         paper_bgcolor="LightSteelBlue",
     )
    # fig2.show()
@@ -238,23 +244,23 @@ def update_graph(option_slctd):
     piegraph.update_layout(
         margin=dict(l=20, r=20, t=20, b=20),
         width=500,
-        height=190,
+        height=210,
         paper_bgcolor="LightSteelBlue",
 
     )
     pie=px.line(filterdata,x="total_cases",y="new_cases_smoothed")
     fig_PolyReg_ret = studying_pred.dt_process(df, option_slctd)  # returns the figures to show
-    continentpie=px.pie(contdf,names=["Africa","Europe","Asia","North America","South America"],values=[africa,Europe,Asia,NorthAmerica,SouthAmerica])
+    continentpie=px.pie(contdf,names=["Africa","Europe","Asia","North America","South America","Australia"],values=[africa,Europe,Asia,NorthAmerica,SouthAmerica,Australia])
     continentpie.update_layout(
         margin=dict(l=20, r=20, t=20, b=20),
         width=500,
-        height=190,
+        height=210,
         paper_bgcolor="LightSteelBlue",
     )
 
 
 
-    return "Data Upto: " + dates,"Total cases:"+ totalcases,"Deaths:"+ deaths,fig2, piegraph, fig_PolyReg_ret,barg,continentpie
+    return "Data Upto:" + dates,"Total Cases : "+ totalcases,"Deaths : "+ deaths,fig2, piegraph, fig_PolyReg_ret,barg,continentpie
 
 
 
