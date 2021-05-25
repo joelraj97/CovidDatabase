@@ -8,6 +8,12 @@ from dash.dependencies import Output,Input
 import CovidPred  as studying_pred
 app=dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
 df=pd.read_csv("owid-covid-data.csv")   #read the covid data from file
+non_z_loc_list = []
+for locn in df["location"].unique():
+    fildata = df[df["location"] == locn]  # to filter out data for the selected country
+    totcases = int(fildata["new_cases"].sum())  # to find the total cases in the selected country
+    if totcases!=0:
+        non_z_loc_list.append(locn)
 
 dff=df.copy()
 dfff=df.copy()
@@ -91,7 +97,7 @@ sidebar = html.Div(
     dcc.Dropdown(
                  id="my_option",       # drop down menu
                  options=[{'label':i,'value':i}
-                          for i in df["location"].unique()
+                          for i in non_z_loc_list   #df["location"].unique()
                           ],   #selecting options from the list of locations
                  value="India",   #initial value set in the dropdown
                  multi=False,
