@@ -113,14 +113,13 @@ app.layout=html.Div([
     html.H1("Covid-19 Coronavirus Pandemic",style={"text-align":"center","font-size":30}), #heading of the application
     sidebar,
       #latest date of the available data
-    html.Br(),
     dbc.Container([
     dbc.Row(    #Row1
      [
             dbc.Col(   [    #first column of Row 1
             dbc.Alert([
                   #html.H4("Total Cases",style={"text-align":"center","font-size":20}),
-                 html.Div(id="totalcases",style={'size': 1, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":20})])],
+                 html.Div(id="totalcases",style={'size': 1, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":15})])],
                  width={'size': 3, "offset": 0, 'order': 3}
         ),
 
@@ -134,12 +133,11 @@ app.layout=html.Div([
             dbc.Col( [     #second column of Row 1
               dbc.Alert([
                # html.H4("Deaths",style={"text-align":"center","font-size":20}),
-                html.Div(id="deathno",title="Deaths",draggable="true",style={'size': 3, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":20})])],
+                html.Div(id="deathno",title="Deaths",draggable="true",style={'size': 3, "offset": 2, 'order': 3,"color":"Red","text-align":"center","font-size":15})])],
                 width={'size': 3, "offset": 0, 'order': 3}
             )
             ]) ,
 
-    html.Br(),
     dbc.Tab([
     dbc.Row( [    #Row 2
         dbc.Col( [   #First column of row 2
@@ -173,12 +171,15 @@ app.layout=html.Div([
 
             ]),
             ]),
+    dbc.Tab([
+      dbc.Row([
+        dbc.Col([
+    dcc.Graph(id="fig_PolyReg",figure={})],
+    #width={'size': 4,"offset": 0, 'order': 2,"max-width":"20%","height": "50%"},
 
-    dcc.Graph(id="fig_PolyReg",figure={}),
-        html.Br(),
-
-
-
+        ),
+    ]),
+]),
 ]),
 ])
 

@@ -387,7 +387,12 @@ def dt_process_allinclusive(df2,option_slctd):
                             line_dash="dash")  # ,#add vertical line on the date to know the SPLIT between training and predicted data
     fig_ARIMA_pred.update_layout(title="'New Cases' Prediction for " + str(opted_country),
                                 xaxis_title="Date", yaxis_title="'New Cases'",
-                                legend=dict(x=0, y=1, traceorder="normal"))         #add legend texts and title texts
+                                legend=dict(x=0, y=1, traceorder="normal",
+                                margin = dict(l=20, r=20, t=20, b=20),
+                                  width = 500,
+                                 height = 190,
+                                    paper_bgcolor = "LightSteelBlue",
+    ))         #add legend texts and title texts
     # fig_ARIMA_pred.show()
 
     ##################################### ARIMA Model End ##########################################################
