@@ -12,29 +12,29 @@ df=pd.read_csv("owid-covid-data.csv")   #read the covid data from file
 dff=df.copy()
 dfff=df.copy()
 dff.drop(dff.columns.difference(['location','new_cases']), 1, inplace=True)
-dfff.drop(dfff.columns.difference(['location','life_expectancy']), 1, inplace=True)
+dfff.drop(dfff.columns.difference(['location','population']), 1, inplace=True)
 #dff.sum(axis=1)
 newdf=dff.groupby(['location'])['new_cases'].sum().reset_index()
-contdf=dfff.groupby(['location'])['life_expectancy'].sum().reset_index()
+contdf=dfff.groupby(['location'])['population'].sum().reset_index()
 print(contdf)
 africaindex=contdf[contdf["location"]=="Africa"].index
 index1=newdf[newdf['location']=='Africa'].index
-africa=contdf.loc[contdf["location"]=="Africa","life_expectancy"]
+africa=int(contdf.iloc[africaindex,1])
+print(africa)
 index2=newdf[newdf['location']=='World'].index
 Europeindex=contdf[contdf["location"]=="Europe"].index
 index3=newdf[newdf['location']=='Europe'].index
-Europe=contdf.loc[contdf["location"]=="Europe","life_expectancy"]
+Europe=int(contdf.iloc[Europeindex,1])
 Asiaindex=contdf[contdf["location"]=="Asia"].index
 index4=newdf[newdf['location']=='Asia'].index
-Asia=contdf.loc[contdf["location"]=="Asia","life_expectancy"]
+Asia=int(contdf.iloc[Asiaindex,1])
 NAindex=contdf[contdf["location"]=="North America"].index
 index5=newdf[newdf['location']=='North America'].index
-NorthAmerica=contdf.loc[contdf["location"]=="North America","life_expectancy"]
+NorthAmerica=int(contdf.iloc[NAindex,1])
 SAindex=contdf[contdf["location"]=="South America"].index
 index6=newdf[newdf['location']=='European Union'].index
 index7=newdf[newdf['location']=='South America'].index
-SouthAmerica=contdf.loc[contdf["location"]=="South America","life_expectancy"]
-print(SouthAmerica)
+SouthAmerica=int(contdf.iloc[SAindex,1])
 newdf.drop(index7 , inplace=True)
 newdf.drop(index3 , inplace=True)
 newdf.drop(index4 , inplace=True)
@@ -238,7 +238,7 @@ def update_graph(option_slctd):
     )
     pie=px.line(filterdata,x="total_cases",y="new_cases_smoothed")
     fig_PolyReg_ret = studying_pred.dt_process(df, option_slctd)  # returns the figures to show
-    continentpie=px.pie(contdf,names=["Africa","Europe","Asia","North America","South America"])
+    continentpie=px.pie(contdf,names=["Africa","Europe","Asia","North America","South America"],values=[africa,Europe,Asia,NorthAmerica,SouthAmerica])
     continentpie.update_layout(
         margin=dict(l=20, r=20, t=20, b=20),
         width=500,
