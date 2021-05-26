@@ -331,7 +331,7 @@ def dt_process_allinclusive(df2,option_slctd):
     #start_p and start_q values sticking to what is used in Kaggle website ---- tried stepwise=True/False both --- observations are not consistent to show one is better than other, so sticking with False, as it seems to take lesser time
     #seasonal parameter given as False haven't tried True option
 
-    # model_sarima.fit(train_ml["new_cases"])
+    #model_sarima.fit(train_ml["new_cases"])
     y_pred = valid_ml.copy()            #to make available testing output and prediction output as separate columns of y_pred for MSE comparison
     prediction_sarima = model_sarima.predict(len(valid_ml))         #Prediction for next len(valid_ml) days
     y_pred["SARIMA Model Prediction"] = prediction_sarima
@@ -387,7 +387,12 @@ def dt_process_allinclusive(df2,option_slctd):
                             line_dash="dash")  # ,#add vertical line on the date to know the SPLIT between training and predicted data
     fig_ARIMA_pred.update_layout(title="'New Cases' Prediction for " + str(opted_country),
                                 xaxis_title="Date", yaxis_title="'New Cases'",
-                                legend=dict(x=0, y=1, traceorder="normal"))         #add legend texts and title texts
+                                legend=dict(x=0, y=1, traceorder="normal",
+                                margin = dict(l=20, r=20, t=20, b=20),
+                                  width = 500,
+                                 height = 190,
+                                    paper_bgcolor = "LightSteelBlue",
+    ))         #add legend texts and title texts
     # fig_ARIMA_pred.show()
 
     ##################################### ARIMA Model End ##########################################################
